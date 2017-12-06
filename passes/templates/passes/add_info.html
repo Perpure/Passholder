@@ -1,0 +1,6 @@
+<p>Добавление информации об аккаунте
+<form action="{% url 'passes:add_info'%}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Готово" />
+</form>
