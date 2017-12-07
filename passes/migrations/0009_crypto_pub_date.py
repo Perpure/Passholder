@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='crypto',
             name='pub_date',
-            field=models.DateTimeField(default='0', verbose_name='date created'),
+            field=models.DateTimeField(default='2017-10-10 00:00', verbose_name='date created'),
         ),
     ]
