@@ -7,82 +7,91 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     return render(request, 'passes/index.html')
 
+@login_required(login_url='/auth/')
 def add_info(request):
-    if request.method == 'POST':
-        form = PassForm(request.POST)
-        if form.is_valid():
-            sourceb = bytes(form.cleaned_data['source_text'], 'utf-8')
-            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-            s_nonce=cipher.nonce
-            source, s_tag = cipher.encrypt_and_digest(sourceb)
-
-            loginb = bytes(form.cleaned_data['login_text'], 'utf-8')
-            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-            l_nonce=cipher.nonce
-            login, l_tag = cipher.encrypt_and_digest(loginb)
-
-            passwordb = bytes(form.cleaned_data['password_text'], 'utf-8')
-            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-            p_nonce=cipher.nonce
-            password, p_tag = cipher.encrypt_and_digest(passwordb)
-
-            cr = Crypto(
-                tag_s = s_tag,
-                nonce_s = s_nonce,
-                tag_l = l_tag,
-                nonce_l = l_nonce,
-                tag_p = p_tag,
-                nonce_p = p_nonce,
-                cr_date = timezone.now())
-            cr.save()
-
-            us = Pass_info(
-                source_text = source,
-                login_text = login,
-                password_text = password,
-                crypto=Crypto.objects.latest("cr_date"))
-            us.save()
-            return render(request, 'passes/success.html')
+    if request.user.is_authenticated():
+        if request.method == 'POST':
+            form = PassForm(request.POST)
+            if form.is_valid():
+                sourceb = bytes(form.cleaned_data['source_text'], 'utf-8')
+                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
+                s_nonce=cipher.nonce
+                source, s_tag = cipher.encrypt_and_digest(sourceb)
+    
+                loginb = bytes(form.cleaned_data['login_text'], 'utf-8')
+                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
+                l_nonce=cipher.nonce
+                login, l_tag = cipher.encrypt_and_digest(loginb)
+    
+                passwordb = bytes(form.cleaned_data['password_text'], 'utf-8')
+                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
+                p_nonce=cipher.nonce
+                password, p_tag = cipher.encrypt_and_digest(passwordb)
+    
+                cr = Crypto(
+                    tag_s = s_tag,
+                    nonce_s = s_nonce,
+                    tag_l = l_tag,
+                    nonce_l = l_nonce,
+                    tag_p = p_tag,
+                    nonce_p = p_nonce,
+                    cr_date = timezone.now())
+                cr.save()
+    
+                us = Pass_info(
+                    source_text = source,
+                    login_text = login,
+                    password_text = password,
+                    crypto = Crypto.objects.latest("cr_date"),
+                    userid = request.user.id)
+                us.save()
+                return render(request, 'passes/success.html')
+        else:
+            form = PassForm()
+        return render(request, 'passes/add_info.html', {'form':form})
     else:
-        form = PassForm()
-    return render(request, 'passes/add_info.html', {'form':form})
+        return render(request, 'passes/login_required.html')
 
+@login_required(login_url='/auth/')
 def get_info(request):
-    q=Pass_info.objects.get(id=1)
-    c=Crypto.objects.get(id=q.crypto_id)
-
-    cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
-    source = cipher.decrypt(q.source_text)
-    try:
-        cipher.verify(c.tag_s)
-        source_r=source
-    except ValueError:
-        sorce_r='error'
-
-    cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
-    login = cipher.decrypt(q.login_text)
-    try:
-        cipher.verify(c.tag_l)
-        login_r=login
-    except ValueError:
-        login_r='error'
-
-    cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
-    password = cipher.decrypt(q.password_text)
-    try:
-        cipher.verify(c.tag_p)
-        password_r=password
-    except ValueError:
-        password_r='error'
-
-    return render(request, 'passes/get_info.html', {'source':source_r,
-                                                    'password':password_r,
-                                                    'login':login_r})
+    cred=Pass_info.objects.filter(userid=request.user.id)
+    out=[]
+    for q in cred:
+        c=Crypto.objects.get(id=q.crypto_id)
+        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
+        source = cipher.decrypt(q.source_text)
+        try:
+            cipher.verify(c.tag_s)
+            source_r=source
+        except ValueError:
+            sorce_r='error'
+        out.append(source_r)
+ 
+        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
+        login = cipher.decrypt(q.login_text)
+        try:
+            cipher.verify(c.tag_l)
+            login_r=login
+        except ValueError:
+            login_r='error'
+        out.append(login_r)    
+ 
+        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+        password = cipher.decrypt(q.password_text)
+        try:
+            cipher.verify(c.tag_p)
+            password_r=password
+        except ValueError:
+            password_r='error'
+        out.append(password_r)
+    
+    return render(request, 'passes/get_info.html', {'out':out})
 def reg(request):
     if request.method == 'POST':
         form = RegForm(request.POST)
@@ -114,11 +123,12 @@ def auth(request):
     if request.method == 'POST':
         form = AuthForm(request.POST)
         if form.is_valid():
-            login = form.cleaned_data['login']
-            password = form.cleaned_data['password']
-            user = authenticate(username=login, password=password)
+            ulogin = form.cleaned_data['login']
+            upassword = form.cleaned_data['password']
+            user = authenticate(username=ulogin, password=upassword)
             if user is not None:
                 if user.is_active:
+                    login(request, user)
                     return render(request, 'passes/success.html')
                 else:
                     return render(request, 'passes/auth.html', {'form':form,
@@ -130,6 +140,13 @@ def auth(request):
         form = AuthForm()
     return render(request, 'passes/auth.html', {'form':form,
                                                 'errormsg':""})
+
+def logoutview(request):
+    logout(request)
+    return HttpResponseRedirect('/')
+
+def login_required(request):
+    return render(request, 'passes/login_required.html')
 # Create your views here.
 
 

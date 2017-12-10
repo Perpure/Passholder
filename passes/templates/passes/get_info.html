@@ -1,6 +1,14 @@
 <p>Получение информации об аккаунте
-<p>Ресурс: {{source}}
-<p>Логин: {{login}}
-<p>Пароль: {{password}}
-<p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
+{% if out %}
+    <ul>
+    {% for i in out %}
+        <li>{{ i }}</li>
+    {% endfor %}
+    </ul>
+    <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
+{% else %}
+    <p><a href="{% url 'passes:add_info'%}">Добавить</a>
+{% endif %}
+
 <p><a href="{% url 'passes:index'%}">На главную</a>
+<p><a href="{% url 'passes:logout'%}">Выйти</a>

@@ -15,4 +15,5 @@ class Pass_info(models.Model):
     login_text = models.BinaryField()
     password_text = models.BinaryField()
     crypto = models.ForeignKey(Crypto, on_delete=models.CASCADE, default=1)
+    userid = models.IntegerField(default=1)
 # Create your models here.
