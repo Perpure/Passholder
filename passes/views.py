@@ -10,88 +10,93 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 
+
 def index(request):
     return render(request, 'passes/index.html')
 
+
 @login_required(login_url='/auth/')
 def add_info(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         if request.method == 'POST':
             form = PassForm(request.POST)
             if form.is_valid():
                 sourceb = bytes(form.cleaned_data['source_text'], 'utf-8')
                 cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-                s_nonce=cipher.nonce
+                s_nonce = cipher.nonce
                 source, s_tag = cipher.encrypt_and_digest(sourceb)
-    
+
                 loginb = bytes(form.cleaned_data['login_text'], 'utf-8')
                 cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-                l_nonce=cipher.nonce
+                l_nonce = cipher.nonce
                 login, l_tag = cipher.encrypt_and_digest(loginb)
-    
+
                 passwordb = bytes(form.cleaned_data['password_text'], 'utf-8')
                 cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-                p_nonce=cipher.nonce
+                p_nonce = cipher.nonce
                 password, p_tag = cipher.encrypt_and_digest(passwordb)
-    
+
                 cr = Crypto(
-                    tag_s = s_tag,
-                    nonce_s = s_nonce,
-                    tag_l = l_tag,
-                    nonce_l = l_nonce,
-                    tag_p = p_tag,
-                    nonce_p = p_nonce,
-                    cr_date = timezone.now())
+                    tag_s=s_tag,
+                    nonce_s=s_nonce,
+                    tag_l=l_tag,
+                    nonce_l=l_nonce,
+                    tag_p=p_tag,
+                    nonce_p=p_nonce,
+                    cr_date=timezone.now())
                 cr.save()
-    
+
                 us = Pass_info(
-                    source_text = source,
-                    login_text = login,
-                    password_text = password,
-                    crypto = Crypto.objects.latest("cr_date"),
-                    userid = request.user.id)
+                    source_text=source,
+                    login_text=login,
+                    password_text=password,
+                    crypto=Crypto.objects.latest("cr_date"),
+                    userid=request.user.id)
                 us.save()
                 return render(request, 'passes/success.html')
         else:
             form = PassForm()
-        return render(request, 'passes/add_info.html', {'form':form})
+        return render(request, 'passes/add_info.html', {'form': form})
     else:
         return render(request, 'passes/login_required.html')
 
+
 @login_required(login_url='/auth/')
 def get_info(request):
-    cred=Pass_info.objects.filter(userid=request.user.id)
-    out=[]
+    cred = Pass_info.objects.filter(userid=request.user.id)
+    out = []
     for q in cred:
-        c=Crypto.objects.get(id=q.crypto_id)
+        c = Crypto.objects.get(id=q.crypto_id)
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
         source = cipher.decrypt(q.source_text)
         try:
             cipher.verify(c.tag_s)
-            source_r=source
+            source_r = source
         except ValueError:
-            sorce_r='error'
+            sorce_r = 'error'
         out.append(source_r)
- 
+
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
         login = cipher.decrypt(q.login_text)
         try:
             cipher.verify(c.tag_l)
-            login_r=login
+            login_r = login
         except ValueError:
-            login_r='error'
-        out.append(login_r)    
- 
+            login_r = 'error'
+        out.append(login_r)
+
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
         password = cipher.decrypt(q.password_text)
         try:
             cipher.verify(c.tag_p)
-            password_r=password
+            password_r = password
         except ValueError:
-            password_r='error'
+            password_r = 'error'
         out.append(password_r)
-    
-    return render(request, 'passes/get_info.html', {'out':out})
+
+    return render(request, 'passes/get_info.html', {'out': out})
+
+
 def reg(request):
     if request.method == 'POST':
         form = RegForm(request.POST)
@@ -100,24 +105,26 @@ def reg(request):
             password = form.cleaned_data['password']
             password2 = form.cleaned_data['password2']
             email = form.cleaned_data['email']
-            if password==password2:
+            if password == password2:
                 try:
                     user = User.objects.create_user(login, email, password)
                     user.save()
                 except IntegrityError:
-                    return render(request, 'passes/reg.html', {'form':form,
-                                               'errormsg':"Указанный пользователь уже существует!"})
+                    return render(request, 'passes/reg.html', {'form': form,
+                                                               'errormsg': "Указанный пользователь уже существует!"})
                 return render(request, 'passes/success.html')
             else:
-                return render(request, 'passes/reg.html', {'form':form,
-                                               'errormsg':"Пароли не совпадают! Попробуйте еще раз"})
+                return render(request, 'passes/reg.html', {'form': form,
+                                                           'errormsg': "Пароли не совпадают! Попробуйте еще раз"})
     else:
         form = RegForm()
-    return render(request, 'passes/reg.html', {'form':form,
-                                               'errormsg':""})
+    return render(request, 'passes/reg.html', {'form': form,
+                                               'errormsg': ""})
+
 
 def success(request):
     return render(request, 'passes/success.html')
+
 
 def auth(request):
     if request.method == 'POST':
@@ -131,34 +138,22 @@ def auth(request):
                     login(request, user)
                     return render(request, 'passes/success.html')
                 else:
-                    return render(request, 'passes/auth.html', {'form':form,
-                                                'errormsg':"Введенные данные верны, но пользователь не активен на данный момент"})
+                    return render(request, 'passes/auth.html', {'form': form,
+                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент"})
             else:
-                return render(request, 'passes/auth.html', {'form':form,
-                                                'errormsg':"Введенные данные неверны"})
+                return render(request, 'passes/auth.html', {'form': form,
+                                                            'errormsg': "Введенные данные неверны"})
     else:
         form = AuthForm()
-    return render(request, 'passes/auth.html', {'form':form,
-                                                'errormsg':""})
+    return render(request, 'passes/auth.html', {'form': form,
+                                                'errormsg': ""})
+
 
 def logoutview(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+
 def login_required(request):
     return render(request, 'passes/login_required.html')
 # Create your views here.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
