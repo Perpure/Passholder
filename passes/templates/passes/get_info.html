@@ -23,7 +23,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if out.has_previous %}
-            <a href="?page={{ out.previous_page_number }}">предыдущая | </a>
+            <a href="?page={{ out.previous_page_number }}">предыдущая</a> | 
         {% endif %}
 
         {% for page in out.paginator.page_range %}
@@ -36,7 +36,7 @@
         {% endfor %}
 
         {% if out.has_next %}
-            <a href="?page={{ out.next_page_number }}"> | следующая</a>
+             | <a href="?page={{ out.next_page_number }}">следующая</a>
         {% endif %}
     </span>
 </div>
