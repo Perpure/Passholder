@@ -1,10 +1,17 @@
 <p>Получение информации об аккаунте
 {% if out %}
-    <ul>
+<table >
+    <tr><td align="center">Ресурс</td><td align="center">Логин</td><td align="center">Пароль</td></tr>
+    <tr>
     {% for i in out %}
-        <li>{{ i }}</li>
+        <td align="center">{{ i }}</td align="center">
+    {% if forloop.counter|divisibleby:3 %}
+    </tr>
+    <tr>
+    {% endif %}
     {% endfor %}
-    </ul>
+    </tr>
+</table>
     <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
 {% else %}
     <p><a href="{% url 'passes:add_info'%}">Добавить</a>
@@ -12,3 +19,25 @@
 
 <p><a href="{% url 'passes:index'%}">На главную</a>
 <p><a href="{% url 'passes:logout'%}">Выйти</a>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if out.has_previous %}
+            <a href="?page={{ out.previous_page_number }}">предыдущая | </a>
+        {% endif %}
+
+        {% for page in out.paginator.page_range %}
+            {% if forloop.counter != 1 %} | {% endif %}
+            {% if page == out.number %}
+            {{ page }}
+            {% else %}
+            <a href="?page={{ page }}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if out.has_next %}
+            <a href="?page={{ out.next_page_number }}"> | следующая</a>
+        {% endif %}
+    </span>
+</div>
+

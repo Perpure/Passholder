@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def index(request):
@@ -94,6 +95,15 @@ def get_info(request):
             password_r = 'error'
         out.append(password_r)
 
+    pagin = Paginator(out, 9)
+
+    page = request.GET.get('page')
+    try:
+        out = pagin.page(page)
+    except PageNotAnInteger:
+        out = pagin.page(1)
+    except EmptyPage:
+        out = pagin.page(pagin.num_pages)
     return render(request, 'passes/get_info.html', {'out': out})
 
 
