@@ -1,16 +1,15 @@
 <p>Получение информации об аккаунте
+<form action="{% url 'passes:get_info'%}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Найти" />
+</form>
 {% if out %}
 <table >
     <tr><td align="center">Ресурс</td><td align="center">Логин</td><td align="center">Пароль</td></tr>
-    <tr>
     {% for i in out %}
-        <td align="center">{{ i }}</td align="center">
-    {% if forloop.counter|divisibleby:3 %}
-    </tr>
-    <tr>
-    {% endif %}
+    <tr><td align="center">{{ i.source }}</td><td align="center">{{ i.login }}</td><td align="center">{{ i.password }}</td></tr>
     {% endfor %}
-    </tr>
 </table>
     <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
 {% else %}

@@ -1,24 +1,27 @@
 from django.shortcuts import render
 from Crypto.Cipher import AES
 from .models import Pass_info, Crypto
-from .forms import PassForm, RegForm, AuthForm
+from .forms import PassForm, RegForm, AuthForm, FindForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, QueryDict
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+class Cred():
+    def __init__(self, s, l, p):
+        self.source = s
+        self.login = l
+        self.password = p
 
 def index(request):
     return render(request, 'passes/index.html')
 
-
 @login_required(login_url='/auth/')
 def add_info(request):
-    if request.user.is_authenticated:
         if request.method == 'POST':
             form = PassForm(request.POST)
             if form.is_valid():
@@ -58,8 +61,6 @@ def add_info(request):
         else:
             form = PassForm()
         return render(request, 'passes/add_info.html', {'form': form})
-    else:
-        return render(request, 'passes/login_required.html')
 
 
 @login_required(login_url='/auth/')
@@ -75,7 +76,6 @@ def get_info(request):
             source_r = source
         except ValueError:
             sorce_r = 'error'
-        out.append(source_r)
 
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
         login = cipher.decrypt(q.login_text)
@@ -84,7 +84,6 @@ def get_info(request):
             login_r = login
         except ValueError:
             login_r = 'error'
-        out.append(login_r)
 
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
         password = cipher.decrypt(q.password_text)
@@ -93,10 +92,31 @@ def get_info(request):
             password_r = password
         except ValueError:
             password_r = 'error'
-        out.append(password_r)
 
-    pagin = Paginator(out, 9)
+        out.append(Cred(source_r,login_r,password_r))
+    sortedout = out
+    if request.method == 'POST':
+        form = FindForm(request.POST)
+        if form.is_valid():
+            sortedout = []
+            l = form.cleaned_data['login']
+            s = form.cleaned_data['source']
+            if l and s:
+                for cr in out:
+                    if str(cr.login).find(l)+1 and str(cr.source).find(s)+1:
+                        sortedout.append(cr)
+            elif l:
+                for cr in out:
+                    if str(cr.login).find(l)+1:
+                        sortedout.append(cr)
+            elif s:
+                for cr in out:
+                    if str(cr.source).find(s)+1:
+                        sortedout.append(cr)
+    else:
+        form = FindForm()
 
+    pagin = Paginator(out, 3)
     page = request.GET.get('page')
     try:
         out = pagin.page(page)
@@ -104,7 +124,8 @@ def get_info(request):
         out = pagin.page(1)
     except EmptyPage:
         out = pagin.page(pagin.num_pages)
-    return render(request, 'passes/get_info.html', {'out': out})
+    return render(request, 'passes/get_info.html', {'form': form,
+                                                    'out': sortedout})
 
 
 def reg(request):
@@ -166,4 +187,5 @@ def logoutview(request):
 
 def login_required(request):
     return render(request, 'passes/login_required.html')
+
 # Create your views here.

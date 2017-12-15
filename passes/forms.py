@@ -17,3 +17,8 @@ class RegForm(forms.Form):
 class AuthForm(forms.Form):
     login = forms.CharField(label='Логин', max_length=100)
     password = forms.CharField(label='Пароль', max_length=100, widget=forms.PasswordInput())
+
+class FindForm(forms.Form):
+    source = forms.CharField(label='Ресурс', max_length=100, required=False)
+    login = forms.CharField(label='Логин', max_length=100, required=False)
+    
