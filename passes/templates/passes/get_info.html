@@ -13,12 +13,14 @@
 </table>
     <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
 {% else %}
-    <p><a href="{% url 'passes:add_info'%}">Добавить</a>
+    <p>Здесь пусто... <a href="{% url 'passes:add_info'%}">Добавить</a> информацию?
 {% endif %}
 
 <p><a href="{% url 'passes:index'%}">На главную</a>
 <p><a href="{% url 'passes:logout'%}">Выйти</a>
 
+{% if curpage == 1 and not out.has_next %}
+{% else %}
 <div class="pagination">
     <span class="step-links">
         {% if out.has_previous %}
@@ -39,4 +41,5 @@
         {% endif %}
     </span>
 </div>
+{% endif %}
 

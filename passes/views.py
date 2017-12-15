@@ -113,18 +113,23 @@ def get_info(request):
                 for cr in out:
                     if str(cr.source).find(s)+1:
                         sortedout.append(cr)
+            else:
+                sortedout = out
     else:
         form = FindForm()
 
-    pagin = Paginator(out, 3)
+    pagin = Paginator(sortedout, 3)
     page = request.GET.get('page')
     try:
-        out = pagin.page(page)
+        sortedout = pagin.page(page)
     except PageNotAnInteger:
-        out = pagin.page(1)
+        sortedout = pagin.page(1)
+        page = 1
     except EmptyPage:
-        out = pagin.page(pagin.num_pages)
-    return render(request, 'passes/get_info.html', {'form': form,
+        sortedoutt = pagin.page(pagin.num_pages)
+        page = pagin.num_pages
+    return render(request, 'passes/get_info.html', {'curpage': page,
+                                                    'form': form,
                                                     'out': sortedout})
 
 
