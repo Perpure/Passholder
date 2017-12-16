@@ -1,5 +1,5 @@
 <p>Вход в аккаунт
-<form action="{% url 'passes:auth'%}" method="post">
+<form action="{{ request.get_full_path }}" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Готово" />

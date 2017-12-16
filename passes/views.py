@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from Crypto.Cipher import AES
 from .models import Pass_info, Crypto
 from .forms import PassForm, RegForm, AuthForm, FindForm
@@ -172,7 +172,11 @@ def auth(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return render(request, 'passes/success.html')
+                    next_url = request.GET.get('next')
+                    if next_url:
+                        return redirect(next_url)
+                    else:
+                        return render(request, 'passes/success.html')
                 else:
                     return render(request, 'passes/auth.html', {'form': form,
                                                                 'errormsg': "Введенные данные верны, но пользователь не активен на данный момент"})
