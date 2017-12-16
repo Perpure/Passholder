@@ -1,57 +1,69 @@
 <head>
-<script src="/scripts/showpass.js"></script>
+    {% load static %}
+    <script src="{% static "showpass.js" %}"></script>
 </head>
-<p>Получение информации об аккаунте
-<form action="{% url 'passes:get_info'%}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Найти" />
-</form>
-{% if out %}
-<table >
-    <tr><td align="center">Ресурс</td>
-        <td align="center">Логин</td>
-        <td align="center">Пароль</td>
-        <td align="center">Показать пароль</td>
-    </tr>
-    {% for i in out %}
-    <tr>
-        <td align="center">{{ i.source }}</td>
-        <td align="center">{{ i.login }}</td>
-        <td align="center"><p id="ajax_content"></td>
-        <td align="center"><a href="#" onclick="req_ajax_json">Показать</a></td>
-    </tr>
-    {% endfor %}
-</table>
-    <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
-{% else %}
-    <p>Здесь пусто... <a href="{% url 'passes:add_info'%}">Добавить</a> информацию?
-{% endif %}
+<body>
+    <p>Получение информации об аккаунте
+    <form action="{% url 'passes:get_info'%}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Найти" />
+    </form>
 
-<p><a href="{% url 'passes:index'%}">На главную</a>
-<p><a href="{% url 'passes:logout'%}">Выйти</a>
+    {% if out %}
+    <table border="1">
+        <tr><td align="center">Ресурс</td>
+            <td align="center">Логин</td>
+            <td align="center">Пароль</td>
+            <td align="center">Показать пароль</td>
+        </tr>
 
-{% if curpage == 1 and not out.has_next %}
-{% else %}
-<div class="pagination">
-    <span class="step-links">
-        {% if out.has_previous %}
-            <a href="?page={{ out.previous_page_number }}">предыдущая</a> | 
-        {% endif %}
-
-        {% for page in out.paginator.page_range %}
-            {% if forloop.counter != 1 %} | {% endif %}
-            {% if page == out.number %}
-            {{ page }}
-            {% else %}
-            <a href="?page={{ page }}">{{ page }}</a>
-            {% endif %}
+        {% for i in out %}
+        <tr>
+            <td align="center">{{ i.source }}</td>
+            <td align="center">{{ i.login }}</td>
+            <td align="center"><p id="ajax_content"></td>
+            <td align="center"><a href="#" onclick="req_ajax_json();">Показать</a></td>
+        </tr>
         {% endfor %}
 
-        {% if out.has_next %}
-             | <a href="?page={{ out.next_page_number }}">следующая</a>
-        {% endif %}
-    </span>
-</div>
-{% endif %}
+    </table>
 
+    <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
+    {% else %}
+        <p>Здесь пусто... <a href="{% url 'passes:add_info'%}">Добавить</a> информацию?
+    {% endif %}
+
+    <p><a href="{% url 'passes:index'%}">На главную</a>
+    <p><a href="{% url 'passes:logout'%}">Выйти</a>
+
+    {% if curpage == 1 and not out.has_next %}
+    {% else %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if out.has_previous %}
+                <a href="?page={{ out.previous_page_number }}">предыдущая</a> |
+            {% endif %}
+
+            {% for page in out.paginator.page_range %}
+                {% if forloop.counter != 1 %} | {% endif %}
+                {% if page == out.number %}
+                {{ page }}
+                {% else %}
+                <a href="?page={{ page }}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if out.has_next %}
+                 | <a href="?page={{ out.next_page_number }}">следующая</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+
+{# Сторонние скрипты обычно подключаются в самом конце страницы #}
+<script src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+
+</body>
