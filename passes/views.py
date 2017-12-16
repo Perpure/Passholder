@@ -20,6 +20,9 @@ class Cred():
 def index(request):
     return render(request, 'passes/index.html')
 
+def get_json(request):
+    return JsonResponse({"password": "pass"})
+
 @login_required(login_url='/auth/')
 def add_info(request):
         if request.method == 'POST':

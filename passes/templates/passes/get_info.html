@@ -1,3 +1,6 @@
+<head>
+<script src="/scripts/showpass.js"></script>
+</head>
 <p>Получение информации об аккаунте
 <form action="{% url 'passes:get_info'%}" method="post">
     {% csrf_token %}
@@ -6,9 +9,18 @@
 </form>
 {% if out %}
 <table >
-    <tr><td align="center">Ресурс</td><td align="center">Логин</td><td align="center">Пароль</td></tr>
+    <tr><td align="center">Ресурс</td>
+        <td align="center">Логин</td>
+        <td align="center">Пароль</td>
+        <td align="center">Показать пароль</td>
+    </tr>
     {% for i in out %}
-    <tr><td align="center">{{ i.source }}</td><td align="center">{{ i.login }}</td><td align="center">{{ i.password }}</td></tr>
+    <tr>
+        <td align="center">{{ i.source }}</td>
+        <td align="center">{{ i.login }}</td>
+        <td align="center"><p id="ajax_content"></td>
+        <td align="center"><a href="#" onclick="req_ajax_json">Показать</a></td>
+    </tr>
     {% endfor %}
 </table>
     <p><a href="{% url 'passes:add_info'%}">Добавить еще</a>
