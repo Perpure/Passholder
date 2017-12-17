@@ -5,7 +5,7 @@ from .forms import PassForm, RegForm, AuthForm, FindForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
-from django.http import HttpResponseRedirect, QueryDict, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
@@ -13,10 +13,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class Cred():
-    def __init__(self, s, l, p):
+    def __init__(self, s, l, p, i):
         self.source = s
         self.login = l
         self.password = p
+        self.id = i
 
 
 def index(request):
@@ -24,7 +25,9 @@ def index(request):
 
 
 def get_json(request):
-    return JsonResponse({"password": "pass"})
+    
+    return JsonResponse({"password": "pass",
+                         "id": "#1"})
 
 
 @login_required(login_url='/auth/')
@@ -72,6 +75,7 @@ def add_info(request):
 
 @login_required(login_url='/auth/')
 def get_info(request):
+    i = 0
     cred = Pass_info.objects.filter(userid=request.user.id)
     out = []
     for q in cred:
@@ -100,7 +104,9 @@ def get_info(request):
         except ValueError:
             password_r = 'error'
 
-        out.append(Cred(source_r, login_r, password_r))
+        out.append(Cred(source_r, login_r, password_r, i))
+        i += 1
+
     sortedout = out
     if request.method == 'POST':
         form = FindForm(request.POST)

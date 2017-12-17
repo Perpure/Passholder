@@ -4,7 +4,7 @@ function req_ajax_json(){
         dataType: "json"
     });
     req.done(function(json_data){
-        $("#ajax_content").text("")
-        $("#ajax_content").append("test: "+json_data.password)
+        $(json_data.id).text("")
+        $(json_data.id).append(json_data.password)
     });
 };
