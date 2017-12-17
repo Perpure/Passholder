@@ -5,11 +5,12 @@ from .forms import PassForm, RegForm, AuthForm, FindForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
-from django.http import HttpResponseRedirect, QueryDict
+from django.http import HttpResponseRedirect, QueryDict, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 class Cred():
     def __init__(self, s, l, p):
@@ -17,53 +18,56 @@ class Cred():
         self.login = l
         self.password = p
 
+
 def index(request):
     return render(request, 'passes/index.html')
+
 
 def get_json(request):
     return JsonResponse({"password": "pass"})
 
+
 @login_required(login_url='/auth/')
 def add_info(request):
-        if request.method == 'POST':
-            form = PassForm(request.POST)
-            if form.is_valid():
-                sourceb = bytes(form.cleaned_data['source_text'], 'utf-8')
-                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-                s_nonce = cipher.nonce
-                source, s_tag = cipher.encrypt_and_digest(sourceb)
+    if request.method == 'POST':
+        form = PassForm(request.POST)
+        if form.is_valid():
+            sourceb = bytes(form.cleaned_data['source_text'], 'utf-8')
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
+            s_nonce = cipher.nonce
+            source, s_tag = cipher.encrypt_and_digest(sourceb)
 
-                loginb = bytes(form.cleaned_data['login_text'], 'utf-8')
-                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-                l_nonce = cipher.nonce
-                login, l_tag = cipher.encrypt_and_digest(loginb)
+            loginb = bytes(form.cleaned_data['login_text'], 'utf-8')
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
+            l_nonce = cipher.nonce
+            login, l_tag = cipher.encrypt_and_digest(loginb)
 
-                passwordb = bytes(form.cleaned_data['password_text'], 'utf-8')
-                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
-                p_nonce = cipher.nonce
-                password, p_tag = cipher.encrypt_and_digest(passwordb)
+            passwordb = bytes(form.cleaned_data['password_text'], 'utf-8')
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX)
+            p_nonce = cipher.nonce
+            password, p_tag = cipher.encrypt_and_digest(passwordb)
 
-                cr = Crypto(
-                    tag_s=s_tag,
-                    nonce_s=s_nonce,
-                    tag_l=l_tag,
-                    nonce_l=l_nonce,
-                    tag_p=p_tag,
-                    nonce_p=p_nonce,
-                    cr_date=timezone.now())
-                cr.save()
+            cr = Crypto(
+                tag_s=s_tag,
+                nonce_s=s_nonce,
+                tag_l=l_tag,
+                nonce_l=l_nonce,
+                tag_p=p_tag,
+                nonce_p=p_nonce,
+                cr_date=timezone.now())
+            cr.save()
 
-                us = Pass_info(
-                    source_text=source,
-                    login_text=login,
-                    password_text=password,
-                    crypto=Crypto.objects.latest("cr_date"),
-                    userid=request.user.id)
-                us.save()
-                return render(request, 'passes/success.html')
-        else:
-            form = PassForm()
-        return render(request, 'passes/add_info.html', {'form': form})
+            us = Pass_info(
+                source_text=source,
+                login_text=login,
+                password_text=password,
+                crypto=Crypto.objects.latest("cr_date"),
+                userid=request.user.id)
+            us.save()
+            return render(request, 'passes/success.html')
+    else:
+        form = PassForm()
+    return render(request, 'passes/add_info.html', {'form': form})
 
 
 @login_required(login_url='/auth/')
@@ -96,7 +100,7 @@ def get_info(request):
         except ValueError:
             password_r = 'error'
 
-        out.append(Cred(source_r,login_r,password_r))
+        out.append(Cred(source_r, login_r, password_r))
     sortedout = out
     if request.method == 'POST':
         form = FindForm(request.POST)
@@ -106,15 +110,15 @@ def get_info(request):
             s = form.cleaned_data['source']
             if l and s:
                 for cr in out:
-                    if str(cr.login).find(l)+1 and str(cr.source).find(s)+1:
+                    if str(cr.login).find(l) + 1 and str(cr.source).find(s) + 1:
                         sortedout.append(cr)
             elif l:
                 for cr in out:
-                    if str(cr.login).find(l)+1:
+                    if str(cr.login).find(l) + 1:
                         sortedout.append(cr)
             elif s:
                 for cr in out:
-                    if str(cr.source).find(s)+1:
+                    if str(cr.source).find(s) + 1:
                         sortedout.append(cr)
             else:
                 sortedout = out

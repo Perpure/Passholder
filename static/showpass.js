@@ -1,4 +1,3 @@
-<scrpit>
 function req_ajax_json(){
     var req = $.ajax({
         url: "/ajax/json",
@@ -9,4 +8,3 @@ function req_ajax_json(){
         $("#ajax_content").append("test: "+json_data.password)
     });
 };
-</script>
