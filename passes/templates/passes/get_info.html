@@ -23,7 +23,7 @@
             <td align="center">{{ i.source }}</td>
             <td align="center">{{ i.login }}</td>
             <td align="center"><p id={{ i.id }}></td>
-            <td align="center"><a href="#" onclick="req_ajax_json();">Показать</a></td>
+            <td align="center"><a href="#" onclick="req_ajax_json('{{ i.id }}');">Показать</a></td>
         </tr>
         {% endfor %}
 

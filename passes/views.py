@@ -25,9 +25,11 @@ def index(request):
 
 
 def get_json(request):
-    
-    return JsonResponse({"password": "pass",
-                         "id": "#1"})
+    id = request.GET['id']
+    #TODO: защита от неправильного айдишника
+    #TODO: расшифровка пароля
+    return JsonResponse({"password": "pass"+str(id),
+                         "id": str(id)})
 
 
 @login_required(login_url='/auth/')
@@ -79,6 +81,7 @@ def get_info(request):
     cred = Pass_info.objects.filter(userid=request.user.id)
     out = []
     for q in cred:
+        #TODO: расшифровывать здесь пароль не нужно, он здесь не передаётся на страницу
         c = Crypto.objects.get(id=q.crypto_id)
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
         source = cipher.decrypt(q.source_text)
