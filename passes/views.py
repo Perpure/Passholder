@@ -95,7 +95,6 @@ def get_info(request):
     cred = Pass_info.objects.filter(userid=request.user.id)
     out = []
     for q in cred:
-        #TODO: расшифровывать здесь пароль не нужно, он здесь не передаётся на страницу
         c = Crypto.objects.get(id=q.crypto_id)
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
         source = cipher.decrypt(q.source_text)
@@ -155,7 +154,43 @@ def get_info(request):
                                                     'form': form,
                                                     'out': sortedout})
 
+@login_required(login_url='/auth/')
+def delete_info(request):
+    credid = request.GET['id']
+    try:
+        cred = Pass_info.objects.get(id=credid)
+        if request.user.id == cred.userid:
+            c = Crypto.objects.get(id=cred.crypto_id)
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
+            source = cipher.decrypt(cred.source_text)
+            try:
+                cipher.verify(c.tag_s)
+                source_r = source
+            except ValueError:
+                sorce_r = 'error'
 
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
+            login = cipher.decrypt(cred.login_text)
+            try:
+                cipher.verify(c.tag_l)
+                login_r = login
+            except ValueError:
+                login_r = 'error'
+            if request.GET['del']=='no':
+                return render(request, 'passes/delete_info.html', {'source': source_r,
+                                                                 'login': login_r,
+                                                                 'id': credid,
+                                                                 'del': 0})
+            elif request.GET['del']=='yes':
+                c.delete()
+                cred.delete()
+                return render(request, 'passes/delete_info.html', {'source': source_r,
+                                                                  'login': login_r,
+                                                                  'del': 1})
+        return render(request, 'passes/delete_info.html', {'del': 2})
+    except:
+        return render(request, 'passes/delete_info.html', {'del': 2})
+            
 def reg(request):
     if request.method == 'POST':
         form = RegForm(request.POST)

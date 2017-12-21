@@ -4,7 +4,6 @@ function req_ajax_json(id){
         dataType: "json"
     });
     req.done(function(json_data){
-        // TODO: обработка защиты от неправильного айдишника
         $("#"+json_data.id).text(json_data.password)
         $("#showid"+json_data.id).text(json_data.show)
     });

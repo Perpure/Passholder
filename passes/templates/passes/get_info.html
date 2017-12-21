@@ -16,6 +16,7 @@
             <td align="center">Логин</td>
             <td align="center">Пароль</td>
             <td align="center">Показать пароль</td>
+            <td align="center">Удалить запись</td>
         </tr>
 
         {% for i in out %}
@@ -24,6 +25,7 @@
             <td align="center">{{ i.login }}</td>
             <td align="center"><p id={{ i.id }}></td>
             <td align="center"><a href="#" onclick="req_ajax_json('{{ i.id }}');" id={{ i.showid }}>Показать</a></td>
+            <td align="center"><a href="{% url 'passes:delete_info'%}?id={{ i.id }}&del=no">Удалить</a></td>
         </tr>
         {% endfor %}
 
