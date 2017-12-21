@@ -25,26 +25,31 @@ def index(request):
 
 def get_json(request):
     credid = request.GET['id']
-    cred = Pass_info.objects.get(id=credid)
-    if request.user.id == cred.userid:
-        c = Crypto.objects.get(id=cred.crypto_id)
-        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
-        password = cipher.decrypt(cred.password_text)
-        try:
-            cipher.verify(c.tag_p)
-            password_r = password
-        except ValueError:
-            password_r = 'error'
-    else:
-        password_r = "error"
-    if request.GET['cont']=="Скрыть":
+    try:
+        cred = Pass_info.objects.get(id=credid)
+        if request.user.id == cred.userid:
+            c = Crypto.objects.get(id=cred.crypto_id)
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+            password = cipher.decrypt(cred.password_text)
+            try:
+                cipher.verify(c.tag_p)
+                password_r = password
+            except ValueError:
+                password_r = 'error'
+        else:
+            password_r = "error"
+        if request.GET['cont']=="Скрыть":
+            return JsonResponse({"password": "",
+                                "id": str(credid),
+                                "show": "Показать"})
+        else:
+            return JsonResponse({"password": password_r.decode("utf-8"),
+                                "id": str(credid),
+                                "show": "Скрыть"})
+    except:
         return JsonResponse({"password": "",
-                             "id": str(credid),
-                             "show": "Показать"})
-    else:
-        return JsonResponse({"password": password_r.decode("utf-8"),
-                             "id": str(credid),
-                             "show": "Скрыть"})
+                                "id": str(credid),
+                                "show": "Показать"})
 
 @login_required(login_url='/auth/')
 def add_info(request):
