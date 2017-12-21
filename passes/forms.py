@@ -21,4 +21,7 @@ class AuthForm(forms.Form):
 class FindForm(forms.Form):
     source = forms.CharField(label='Ресурс', max_length=100, required=False)
     login = forms.CharField(label='Логин', max_length=100, required=False)
+
+class DeleteForm(forms.Form):
+    credid = forms.IntegerField(widget=forms.HiddenInput())
     

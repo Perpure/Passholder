@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from Crypto.Cipher import AES
 from .models import Pass_info, Crypto
-from .forms import PassForm, RegForm, AuthForm, FindForm
+from .forms import PassForm, RegForm, AuthForm, FindForm, DeleteForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
@@ -13,11 +13,12 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class Cred():
-    def __init__(self, s, l, i, si):
+    def __init__(self, s, l, i, si, f):
         self.source = s
         self.login = l
         self.id = i
         self.showid = si
+        self.form = f
 
 def index(request):
     return render(request, 'passes/index.html')
@@ -95,7 +96,6 @@ def get_info(request):
     cred = Pass_info.objects.filter(userid=request.user.id)
     out = []
     for q in cred:
-        #TODO: расшифровывать здесь пароль не нужно, он здесь не передаётся на страницу
         c = Crypto.objects.get(id=q.crypto_id)
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
         source = cipher.decrypt(q.source_text)
@@ -113,9 +113,15 @@ def get_info(request):
         except ValueError:
             login_r = 'error'
 
-
-
-        out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id)))
+        if request.method == 'POST':
+            form = DeleteForm(request.POST)
+            form.data["credid"]=q.id
+            if form.is_valid():
+                c.delete()
+                q.delete()
+        else:
+            form = DeleteForm()
+        out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id), form))
 
     sortedout = out
     if request.method == 'POST':
@@ -179,7 +185,6 @@ def reg(request):
         form = RegForm()
     return render(request, 'passes/reg.html', {'form': form,
                                                'errormsg': ""})
-
 
 def success(request):
     return render(request, 'passes/success.html')
