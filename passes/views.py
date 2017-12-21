@@ -13,24 +13,38 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class Cred():
-    def __init__(self, s, l, p, i):
+    def __init__(self, s, l, i, si):
         self.source = s
         self.login = l
-        self.password = p
         self.id = i
-
+        self.showid = si
 
 def index(request):
     return render(request, 'passes/index.html')
 
 
 def get_json(request):
-    id = request.GET['id']
-    #TODO: защита от неправильного айдишника
-    #TODO: расшифровка пароля
-    return JsonResponse({"password": "pass"+str(id),
-                         "id": str(id)})
-
+    credid = request.GET['id']
+    cred = Pass_info.objects.get(id=credid)
+    if request.user.id == cred.userid:
+        c = Crypto.objects.get(id=cred.crypto_id)
+        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+        password = cipher.decrypt(cred.password_text)
+        try:
+            cipher.verify(c.tag_p)
+            password_r = password
+        except ValueError:
+            password_r = 'error'
+    else:
+        password_r = "error"
+    if request.GET['cont']=="Скрыть":
+        return JsonResponse({"password": "",
+                             "id": str(credid),
+                             "show": "Показать"})
+    else:
+        return JsonResponse({"password": password_r.decode("utf-8"),
+                             "id": str(credid),
+                             "show": "Скрыть"})
 
 @login_required(login_url='/auth/')
 def add_info(request):
@@ -99,16 +113,9 @@ def get_info(request):
         except ValueError:
             login_r = 'error'
 
-        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
-        password = cipher.decrypt(q.password_text)
-        try:
-            cipher.verify(c.tag_p)
-            password_r = password
-        except ValueError:
-            password_r = 'error'
 
-        out.append(Cred(source_r, login_r, password_r, i))
-        i += 1
+
+        out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id)))
 
     sortedout = out
     if request.method == 'POST':
