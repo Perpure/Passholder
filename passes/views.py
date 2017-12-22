@@ -5,7 +5,7 @@ from .forms import PassForm, RegForm, AuthForm, FindForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
@@ -96,7 +96,6 @@ def add_info(request):
 
 @login_required(login_url='/auth/')
 def get_info(request):
-    i = 0
     cred = Pass_info.objects.filter(userid=request.user.id)
     out = []
     for q in cred:
@@ -107,7 +106,7 @@ def get_info(request):
             cipher.verify(c.tag_s)
             source_r = source
         except ValueError:
-            sorce_r = 'error'
+            source_r = 'error'
 
         cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
         login = cipher.decrypt(q.login_text)
@@ -117,11 +116,10 @@ def get_info(request):
         except ValueError:
             login_r = 'error'
 
-
-
         out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id)))
-
     sortedout = out
+    l=""
+    s=""
     if request.method == 'POST':
         form = FindForm(request.POST)
         if form.is_valid():
@@ -157,7 +155,9 @@ def get_info(request):
         page = pagin.num_pages
     return render(request, 'passes/get_info.html', {'curpage': page,
                                                     'form': form,
-                                                    'out': sortedout})
+                                                    'out': sortedout,
+                                                    's': s,
+                                                    'l': l})
 
 @login_required(login_url='/auth/')
 def delete_info(request):
@@ -172,7 +172,7 @@ def delete_info(request):
                 cipher.verify(c.tag_s)
                 source_r = source
             except ValueError:
-                sorce_r = 'error'
+                source_r = 'error'
 
             cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
             login = cipher.decrypt(cred.login_text)
@@ -195,7 +195,89 @@ def delete_info(request):
         return render(request, 'passes/delete_info.html', {'del': 2})
     except:
         return render(request, 'passes/delete_info.html', {'del': 2})
-            
+
+@login_required(login_url='/auth/')
+def download_info(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="%s.csv"' % request.user.username
+    response.write('Ресурс;Логин;Пароль\n')
+    cred = Pass_info.objects.filter(userid=request.user.id)
+    out = []
+    for q in cred:
+        c = Crypto.objects.get(id=q.crypto_id)
+        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_s)
+        source = cipher.decrypt(q.source_text)
+        try:
+            cipher.verify(c.tag_s)
+            source_r = source
+        except ValueError:
+            source_r = 'error'
+
+        cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_l)
+        login = cipher.decrypt(q.login_text)
+        try:
+            cipher.verify(c.tag_l)
+            login_r = login
+        except ValueError:
+            login_r = 'error'
+
+        out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id)))
+    sortedout = []
+    l = request.GET['login']
+    s = request.GET['source']
+    if l and s:
+        for cr in out:
+            if str(cr.login).find(l) + 1 and str(cr.source).find(s) + 1:
+                cred = Pass_info.objects.get(id = cr.id)
+                c = Crypto.objects.get(id=cred.crypto_id)
+                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+                password = cipher.decrypt(cred.password_text)
+                try:
+                    cipher.verify(c.tag_p)
+                    password_r = password
+                except ValueError:
+                    password_r = 'error'
+                response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+    elif l:
+        for cr in out:
+            if str(cr.login).find(l) + 1:
+                cred = Pass_info.objects.get(id = cr.id)
+                c = Crypto.objects.get(id=cred.crypto_id)
+                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+                password = cipher.decrypt(cred.password_text)
+                try:
+                    cipher.verify(c.tag_p)
+                    password_r = password
+                except ValueError:
+                    password_r = 'error'
+                response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+    elif s:
+        for cr in out:
+            if str(cr.source).find(s) + 1:
+                cred = Pass_info.objects.get(id = cr.id)
+                c = Crypto.objects.get(id=cred.crypto_id)
+                cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+                password = cipher.decrypt(cred.password_text)
+                try:
+                    cipher.verify(c.tag_p)
+                    password_r = password
+                except ValueError:
+                    password_r = 'error'
+                response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+    else:
+        for cr in out:
+            cred = Pass_info.objects.get(id = cr.id)
+            c = Crypto.objects.get(id=cred.crypto_id)
+            cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
+            password = cipher.decrypt(cred.password_text)
+            try:
+                cipher.verify(c.tag_p)
+                password_r = password
+            except ValueError:
+                password_r = 'error'
+            response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+    return response
+
 def reg(request):
     if request.method == 'POST':
         form = RegForm(request.POST)

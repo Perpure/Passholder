@@ -35,7 +35,7 @@
     {% else %}
         <p>Здесь пусто... <a href="{% url 'passes:add_info'%}">Добавить</a> информацию?
     {% endif %}
-
+    <p><a href="{% url 'passes:download_info'%}?source={{ s }}&login={{ l }}">Скачать csv файл с текущей информацией</a>
     <p><a href="{% url 'passes:index'%}">На главную</a>
     <p><a href="{% url 'passes:logout'%}">Выйти</a>
 

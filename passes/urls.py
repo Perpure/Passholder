@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^logout/$', views.logoutview, name='logout'),
     url(r'^login_required/$', views.login_required, name='login_required'),
     url(r'^ajax/json/$', views.get_json),
-    url(r'^delete_info/$', views.delete_info, name='delete_info')
+    url(r'^delete_info/$', views.delete_info, name='delete_info'),
+    url(r'^download_info/&', views.download_info, name='download_info'),
 ]
