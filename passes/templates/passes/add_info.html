@@ -1,7 +1,12 @@
-<p>Добавление информации об аккаунте
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+<p>Добавление записи
 <form action="{% url 'passes:add_info'%}" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Готово" />
 </form>
 <p><a href="{% url 'passes:logout'%}">Выйти</a>
+</div>
+{% endblock %}

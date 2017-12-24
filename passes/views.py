@@ -20,7 +20,7 @@ class Cred():
         self.showid = si
 
 def index(request):
-    return render(request, 'passes/index.html')
+    return render(request, 'passes/index.html', {'title': 'Passholder'})
 
 
 def get_json(request):
@@ -40,16 +40,16 @@ def get_json(request):
             password_r = "error"
         if request.GET['cont']=="Скрыть":
             return JsonResponse({"password": "",
-                                "id": str(credid),
-                                "show": "Показать"})
+                                 "id": str(credid),
+                                 "show": "Показать"})
         else:
             return JsonResponse({"password": password_r.decode("utf-8"),
-                                "id": str(credid),
-                                "show": "Скрыть"})
+                                 "id": str(credid),
+                                 "show": "Скрыть"})
     except:
         return JsonResponse({"password": "",
-                                "id": str(credid),
-                                "show": "Показать"})
+                             "id": str(credid),
+                             "show": "Показать",})
 
 @login_required(login_url='/auth/')
 def add_info(request):
@@ -91,7 +91,8 @@ def add_info(request):
             return render(request, 'passes/success.html')
     else:
         form = PassForm()
-    return render(request, 'passes/add_info.html', {'form': form})
+    return render(request, 'passes/add_info.html', {'form': form,
+                                                    'title': 'Добавление записи'})
 
 
 @login_required(login_url='/auth/')
@@ -157,7 +158,8 @@ def get_info(request):
                                                     'form': form,
                                                     'out': sortedout,
                                                     's': s,
-                                                    'l': l})
+                                                    'l': l,
+                                                    'title': 'Просмотр записей' })
 
 @login_required(login_url='/auth/')
 def delete_info(request):
@@ -185,16 +187,20 @@ def delete_info(request):
                 return render(request, 'passes/delete_info.html', {'source': source_r,
                                                                  'login': login_r,
                                                                  'id': credid,
-                                                                 'del': 0})
+                                                                 'del': 0,
+                                                                 'title': 'Удаление записи'})
             elif request.GET['del']=='yes':
                 c.delete()
                 cred.delete()
                 return render(request, 'passes/delete_info.html', {'source': source_r,
                                                                   'login': login_r,
-                                                                  'del': 1})
-        return render(request, 'passes/delete_info.html', {'del': 2})
+                                                                  'del': 1,
+                                                                  'title': 'Удаление записи'})
+        return render(request, 'passes/delete_info.html', {'del': 2,
+                                                           'title': 'Удаление записи'})
     except:
-        return render(request, 'passes/delete_info.html', {'del': 2})
+        return render(request, 'passes/delete_info.html', {'del': 2,
+                                                           'title': 'Удаление записи'})
 
 @login_required(login_url='/auth/')
 def download_info(request):
@@ -292,19 +298,22 @@ def reg(request):
                     user.save()
                 except IntegrityError:
                     return render(request, 'passes/reg.html', {'form': form,
-                                                               'errormsg': "Указанный пользователь уже существует!"})
+                                                               'errormsg': "Указанный пользователь уже существует!",
+                                                               'title': 'Регистрация'})
                 return render(request, 'passes/success.html')
             else:
                 return render(request, 'passes/reg.html', {'form': form,
-                                                           'errormsg': "Пароли не совпадают! Попробуйте еще раз"})
+                                                           'errormsg': "Пароли не совпадают! Попробуйте еще раз",
+                                                           'title': 'Регистрация'})
     else:
         form = RegForm()
     return render(request, 'passes/reg.html', {'form': form,
-                                               'errormsg': ""})
+                                               'errormsg': "",
+                                               'title': 'Регистрация'})
 
 
 def success(request):
-    return render(request, 'passes/success.html')
+    return render(request, 'passes/success.html', {'title': 'Успешно!'})
 
 
 def auth(request):
@@ -324,15 +333,17 @@ def auth(request):
                         return render(request, 'passes/success.html')
                 else:
                     return render(request, 'passes/auth.html', {'form': form,
-                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент"})
+                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
+                                                                'title': 'Вход'})
             else:
                 return render(request, 'passes/auth.html', {'form': form,
-                                                            'errormsg': "Введенные данные неверны"})
+                                                            'errormsg': "Введенные данные неверны",
+                                                            'title': 'Вход'})
     else:
         form = AuthForm()
     return render(request, 'passes/auth.html', {'form': form,
-                                                'errormsg': ""})
-
+                                                'errormsg': "",
+                                                'title': 'Вход'})
 
 def logoutview(request):
     logout(request)
@@ -340,6 +351,4 @@ def logoutview(request):
 
 
 def login_required(request):
-    return render(request, 'passes/login_required.html')
-
-# Create your views here.
+    return render(request, 'passes/login_required.html', {'title': 'Требуется войти'})

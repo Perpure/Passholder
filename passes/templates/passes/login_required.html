@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
 <p>Вам необходимо войти, чтобы просматривать данную страницу
 <p><a href="{% url 'passes:auth'%}">Войти</a>
 <p>Если у вас нет аккаунта, вы можете <a href="{% url 'passes:reg'%}">зарегестрироваться</a>
+</div>
+{% endblock %}

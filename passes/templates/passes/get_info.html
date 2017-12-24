@@ -1,9 +1,7 @@
-<head>
-    {% load static %}
-    <script src="{% static "showpass.js" %}"></script>
-</head>
-<body>
-    <p>Получение информации об аккаунте
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <p>Просмотр записей
     <form action="{% url 'passes:get_info'%}" method="post">
         {% csrf_token %}
         {{ form }}
@@ -62,10 +60,8 @@
         </span>
     </div>
     {% endif %}
-
-{# Сторонние скрипты обычно подключаются в самом конце страницы #}
+</div>
 <script src="https://code.jquery.com/jquery-3.2.1.js"
             integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
             crossorigin="anonymous"></script>
-
-</body>
+{% endblock %}

@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
 <p>Регистрация
 <form action="{% url 'passes:reg'%}" method="post">
     {% csrf_token %}
@@ -6,3 +9,5 @@
 </form>
 {{errormsg}}
 <p><a href="{% url 'passes:index'%}">На главную</a>
+</div>
+{% endblock %}
