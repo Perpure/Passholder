@@ -62,7 +62,7 @@ div.content{
     margin-left: 40px;
     margin-right: 40px;
     background:#e3fdff;
-    min-height: calc(100% - 81px);
+    min-height: calc(100% - 111px);
     border-left: 2px solid #d1f7ff;
     border-right: 2px solid #d1f7ff;
 }
