@@ -7,27 +7,26 @@
         <title>{{title}}</title>
     </head>
     <body>
-
-    <div class="topdiv">
-    <ul class="menu">
-        <li><a href="{% url 'passes:index'%}">PassHolder</a></li>
-        {% if request.user.is_authenticated %}
-        <li><a href="{% url 'passes:add_info'%}">Добавить&nbsp;запись</a></li>
-        <li><a href="{% url 'passes:get_info'%}">Просмотреть&nbsp;записи</a></li>
-        {% endif %}    
-    </ul>
-    <ul class="auth">
-        {% if request.user.is_authenticated %}
-        <li>Вы&nbsp;вошли&nbsp;как&nbsp;{{ request.user.username }}
-        <li class="auth"><a href="{% url 'passes:logout'%}">Выйти</a></li>
-        {% else %}
-        <li class="auth"><a href="{% url 'passes:reg'%}">Регистрация</a></li>
-        <li class="auth"><a href="{% url 'passes:auth'%}">Войти</a></li>
-        {% endif %}
-    </ul>
-    </div>
     {% block content %}
     {% endblock %}
+    <div class="topdiv">
+        <ul class="menu">
+            <li><a href="{% url 'passes:index'%}">PassHolder</a></li>
+            {% if request.user.is_authenticated %}
+            <li><a href="{% url 'passes:add_info'%}">Добавить&nbsp;запись</a></li>
+            <li><a href="{% url 'passes:get_info'%}">Просмотреть&nbsp;записи</a></li>
+            {% endif %}    
+        </ul>
+        <ul class="auth">
+            {% if request.user.is_authenticated %}
+            <li>Вы&nbsp;вошли&nbsp;как&nbsp;{{ request.user.username }}
+            <li class="auth"><a href="{% url 'passes:logout'%}">Выйти</a></li>
+            {% else %}
+            <li class="auth"><a href="{% url 'passes:reg'%}">Регистрация</a></li>
+            <li class="auth"><a href="{% url 'passes:auth'%}">Войти</a></li>
+            {% endif %}
+        </ul>
+    </div>
   </body>
 </html>
 
