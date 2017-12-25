@@ -50,9 +50,11 @@ ul.menu li:hover{
 }
 a:link, a:visited{
     color:#005f66;
+    text-decoration: none;
 }
 a:hover{
     color:#00363a;
+    text-decoration: none;
 }
 div.content{
     padding:30px;
