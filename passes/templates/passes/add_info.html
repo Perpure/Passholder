@@ -1,12 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="content">
-<p>Добавление записи
-<form action="{% url 'passes:add_info'%}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Готово" />
-</form>
-<p><a href="{% url 'passes:logout'%}">Выйти</a>
+    <div class="boxc" align="center">
+        <div class="FieldWrapper">
+            Добавление записи
+        </div>
+        <form action="{% url 'passes:add_info'%}" method="post">
+            {% csrf_token %}
+            <div class="FieldWrapper">
+                {{ form.non_field_errors }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.source_text.errors }}
+                {{ form.source_text }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.login_text.errors }}
+                {{ form.login_text }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.password_text.errors }}
+                {{ form.password_text }}
+            </div>
+            <div class="FieldWrapper">
+                <input type="submit" value="Готово" />
+            </div>
+            {% if msg %}
+            <div class="FieldWrapper">
+                {{ msg }}
+            </div>
+            {% endif %}
+        </form>
+    </div>
 </div>
 {% endblock %}

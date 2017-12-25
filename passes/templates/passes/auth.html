@@ -1,13 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="content">
-<p>Вход в аккаунт
-<form action="{{ request.get_full_path }}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Готово" />
-</form>
-{{errormsg}}
-<p><a href="{% url 'passes:index'%}">На главную</a>
+    <div class="boxc" align="center">
+        <div class="FieldWrapper">Вход в аккаунт</div>
+        <form action="{% url 'passes:auth'%}" method="post">
+        {% csrf_token %}
+            <div class="FieldWrapper">
+                {{ form.non_field_errors }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.login.errors }}
+                {{ form.login }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.password.errors }}
+                {{ form.password }}
+            </div>
+            <div class="FieldWrapper">
+                <input type="submit" value="Готово" />
+            </div>
+            {% if errormsg %}
+                <div class="FieldWrapper">{{errormsg}}</div>
+            {% endif %}
+        </form>
+    </div>
 </div>
 {% endblock %}

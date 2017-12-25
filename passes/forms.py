@@ -2,23 +2,23 @@ from django import forms
 
 
 class PassForm(forms.Form):
-    source_text = forms.CharField(label='Ресурс', max_length=100)
-    login_text = forms.CharField(label='Логин', max_length=100)
-    password_text = forms.CharField(label='Пароль', max_length=100, widget=forms.PasswordInput())
+    source_text = forms.CharField(max_length=100,  widget=forms.TextInput(attrs={'placeholder': 'Ресурс'}))
+    login_text = forms.CharField(max_length=100,  widget=forms.TextInput(attrs={'placeholder': 'Логин'}))
+    password_text = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}))
 
 
 class RegForm(forms.Form):
-    login = forms.CharField(label='Логин', max_length=100)
-    password = forms.CharField(label='Пароль', max_length=100, widget=forms.PasswordInput())
-    password2 = forms.CharField(label='Повторите пароль', max_length=100, widget=forms.PasswordInput())
-    email = forms.EmailField(label='Электронная почта')
+    login = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин'}),  min_length=5)
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}),  min_length=8)
+    password2 = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль'}),  min_length=8)
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'Эл. почта'}))
 
 
 class AuthForm(forms.Form):
-    login = forms.CharField(label='Логин', max_length=100)
-    password = forms.CharField(label='Пароль', max_length=100, widget=forms.PasswordInput())
+    login = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин'}))
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}))
 
 class FindForm(forms.Form):
-    source = forms.CharField(label='Ресурс', max_length=100, required=False)
-    login = forms.CharField(label='Логин', max_length=100, required=False)
+    source = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'placeholder': 'Поиск по ресурсу'}))
+    login = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'placeholder': 'Поиск по логину'}))
     

@@ -4,18 +4,18 @@
         <meta http-equiv="Content-Type"
               content="text/html; charset=windows-1251">
         <link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
-        <title>Passholder</title>
+        <title>{{title}}</title>
     </head>
     <body>
 
     <div class="topdiv">
-    {% if request.user.is_authenticated %}
     <ul class="menu">
         <li><a href="{% url 'passes:index'%}">PassHolder</a></li>
+        {% if request.user.is_authenticated %}
         <li><a href="{% url 'passes:add_info'%}">Добавить&nbsp;запись</a></li>
         <li><a href="{% url 'passes:get_info'%}">Просмотреть&nbsp;записи</a></li>
+        {% endif %}    
     </ul>
-    {% endif %}
     <ul class="auth">
         {% if request.user.is_authenticated %}
         <li>Вы&nbsp;вошли&nbsp;как&nbsp;{{ request.user.username }}

@@ -5,12 +5,17 @@ body, html {
     left:0px;
     height:100%;
 }
+body {
+    font-family:serif 16px;
+}
 .topdiv {
     background: #c0f7ff;
     padding: 10px;
     padding-left: 0px;
     width:100%;
+    height:31px;
     top:0px;
+    box-shadow:0 0 5px rgba(0,0,0,0.1);
     position:fixed;
 }
 ul.auth {
@@ -38,7 +43,7 @@ ul.menu {
 ul.menu li {
     display: inline;
     margin: 10px;
-    margin-left:0px;
+    margin-left: 0px;
     padding: 10px;
     border-radius:10px;
     -webkit-transition: background 0.4s ease;
@@ -59,10 +64,49 @@ a:hover{
 div.content{
     padding:30px;
     padding-top:81px;
-    margin-left: 40px;
-    margin-right: 40px;
     background:#e3fdff;
     min-height: calc(100% - 111px);
-    border-left: 2px solid #d1f7ff;
-    border-right: 2px solid #d1f7ff;
 }
+div.FieldWrapper{
+    margin:10px;
+}
+div.box{
+    border: 2px solid #d1f7ff;
+    position:relative;
+    background:white;
+    padding:10px;
+    display: inline-block;
+    border-radius:10px;
+    margin: 0px 20px 20px 0px;
+}
+div.boxr{
+    float:right;
+    border: 2px solid #d1f7ff;
+    position:relative;
+    background:white;
+    padding:10px;
+    display: inline-block;
+    border-radius:10px;
+    margin: 0px 20px 20px 0px;
+}
+div.boxc{
+    border: 2px solid #d1f7ff;
+    background:white;
+    padding:10px;
+    width:206px;
+    border-radius:10px;
+    margin: auto;
+}
+table.info{
+    border: 1px solid #b5f2ff;
+}
+table.info td{
+    border: 1px solid #b5f2ff;
+}
+span.pagination{
+    margin:0px;
+    padding:2px 4px;
+]
+
+
+
