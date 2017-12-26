@@ -5,7 +5,7 @@
         <div class="box">
             <div class="FieldWrapper">Вы собираетесь удалить запись, расположенную на ресурсе {{source}} с логином {{login}}. вы уверены?</div>
             <div class="FieldWrapper" align="center"><a href="{% url 'passes:delete_info'%}?id={{ id }}&del=yes">Да</a></div>
-            <div class="FieldWrapper" align="center"><a href="{% url 'passes:get_info'%}">Нет</a><div>
+            <div class="FieldWrapper" align="center"><a href="{% url 'passes:get_info'%}">Нет</a></div>
         </div>
     {% endif %}
     {% if del == 1 %}
@@ -16,8 +16,7 @@
     {% endif %}
     {% if del == 2 %}
         <div class="box">
-            <div class="FieldWrapper">Что-то не так. <a href="{% url 'passes:get_info'%}">Вернуться на страницу просмотра вашей информации.</a>
-            </div>
+            <div class="FieldWrapper">Что-то не так. <a href="{% url 'passes:get_info'%}">Вернуться на страницу просмотра вашей информации.</a></div>
         </div>
     {% endif %}
 </div>
