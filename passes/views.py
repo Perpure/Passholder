@@ -11,7 +11,9 @@ from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import re
 
+ALLOWED_CHARS=r'[a-zA-Z0-9!+-_().,:;=]'
 
 class Cred():
     def __init__(self, s, l, i, si):
@@ -295,19 +297,24 @@ def reg(request):
             password = form.cleaned_data['password']
             password2 = form.cleaned_data['password2']
             email = form.cleaned_data['email']
-            if password == password2:
-                try:
-                    user = User.objects.create_user(login, email, password)
-                    user.save()
-                except IntegrityError:
+            if re.match(ALLOWED_CHARS, login) and re.match(ALLOWED_CHARS, password) and re.match(ALLOWED_CHARS, password2):
+                if password == password2:
+                    try:
+                        user = User.objects.create_user(login, email, password)
+                        user.save()
+                    except IntegrityError:
+                        return render(request, 'passes/reg.html', {'form': form,
+                                                                   'errormsg': "Указанный пользователь уже существует!",
+                                                                   'title': 'Регистрация'})
+                    return render(request, 'passes/auth.html', {'title': 'Вход',
+                                                                'form': AuthForm()})
+                else:
                     return render(request, 'passes/reg.html', {'form': form,
-                                                               'errormsg': "Указанный пользователь уже существует!",
+                                                               'errormsg': "Пароли не совпадают! Попробуйте еще раз",
                                                                'title': 'Регистрация'})
-                return render(request, 'passes/auth.html', {'title': 'Вход',
-                                                            'form': AuthForm()})
             else:
                 return render(request, 'passes/reg.html', {'form': form,
-                                                           'errormsg': "Пароли не совпадают! Попробуйте еще раз",
+                                                           'errormsg': "Разрешенные символы: a-z A-Z 0-9 ! + - _ () . , : ; =",
                                                            'title': 'Регистрация'})
     else:
         form = RegForm()
@@ -322,21 +329,26 @@ def auth(request):
             ulogin = form.cleaned_data['login']
             upassword = form.cleaned_data['password']
             user = authenticate(username=ulogin, password=upassword)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    next_url = request.GET.get('next')
-                    if next_url:
-                        return redirect(next_url)
+            if re.match(ALLOWED_CHARS, ulogin) and re.match(ALLOWED_CHARS, upassword):
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        next_url = request.GET.get('next')
+                        if next_url:
+                            return redirect(next_url)
+                        else:
+                            return render(request, 'passes/index.html',{'title': 'PassHolder'})
                     else:
-                        return render(request, 'passes/index.html',{'title': 'PassHolder'})
+                        return render(request, 'passes/auth.html', {'form': form,
+                                                                    'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
+                                                                    'title': 'Вход'})
                 else:
                     return render(request, 'passes/auth.html', {'form': form,
-                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
+                                                                'errormsg': "Введенные данные неверные",
                                                                 'title': 'Вход'})
             else:
                 return render(request, 'passes/auth.html', {'form': form,
-                                                            'errormsg': "Введенные данные неверные",
+                                                            'errormsg': "Разрешенные символы: a-z A-Z 0-9 ! + - _ () . , : ; =",
                                                             'title': 'Вход'})
     else:
         form = AuthForm()
@@ -352,19 +364,24 @@ def userpage(request):
             passwordold = form.cleaned_data['passwordold']
             password = form.cleaned_data['password']
             password2 = form.cleaned_data['password2']
-            if check_password(passwordold, request.user.password):
-                if password == password2:
-                    request.user.set_password(password)
-                    ulogin = request.user.username
-                    request.user.save()
-                    user = authenticate(username=ulogin, password=password)
-                    login(request, user)
-                    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                    'msg': 'Ваш пароль успешно сменен',
-                                                                    'title': request.user.username})
+            if re.match(ALLOWED_CHARS, passwordold) and re.match(ALLOWED_CHARS, password) and re.match(ALLOWED_CHARS, password2):
+                if check_password(passwordold, request.user.password):
+                    if password == password2:
+                        request.user.set_password(password)
+                        ulogin = request.user.username
+                        request.user.save()
+                        user = authenticate(username=ulogin, password=password)
+                        login(request, user)
+                        return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                        'msg': 'Ваш пароль успешно сменен',
+                                                                        'title': request.user.username})
+                    else:
+                        return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                        'msg': 'Пароли не совпадают',
+                                                                        'title': request.user.username})
                 else:
                     return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                    'msg': 'Пароли не совпадают',
+                                                                    'msg': 'Разрешенные символы: a-z A-Z 0-9 ! + - _ () . , : ; =',
                                                                     'title': request.user.username})
             else:
                 return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
@@ -373,7 +390,6 @@ def userpage(request):
     else:
         form = ChangePassForm()
     return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                    'msg': '---',
                                                     'title': request.user.username})
 
 def logoutview(request):
