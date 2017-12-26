@@ -6,7 +6,8 @@ body, html {
     height:100%;
 }
 body {
-    font-family:serif 16px;
+    font-family:serif;
+    font-size:16px;
 }
 .topdiv {
     background: #c0f7ff;
