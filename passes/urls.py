@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^ajax/json/$', views.get_json),
     url(r'^delete_info/$', views.delete_info, name='delete_info'),
     url(r'^download_info/&', views.download_info, name='download_info'),
+    url(r'^userpage/$', views.userpage, name='userpage'),
 ]

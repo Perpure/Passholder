@@ -21,4 +21,10 @@ class AuthForm(forms.Form):
 class FindForm(forms.Form):
     source = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'placeholder': 'Поиск по ресурсу'}))
     login = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'placeholder': 'Поиск по логину'}))
+
+class ChangePassForm(forms.Form):
+    passwordold = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Прежний пароль'}))
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Новый пароль'}),  min_length=8)
+    password2 = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Повторите новый пароль'}),  min_length=8)
+    
     

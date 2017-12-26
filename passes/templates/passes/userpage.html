@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="boxc" align="center">
+        <div class="FieldWrapper">Сменить пароль</div>
+        <form action="{% url 'passes:userpage'%}" method="post">
+            {% csrf_token %}
+            <div class="FieldWrapper">
+                {{ form.non_field_errors }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.passwordold.errors }}
+                {{ form.passwordold }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.password.errors }}
+                {{ form.password }}
+            </div>
+            <div class="FieldWrapper">
+                {{ form.password2.errors }}
+                {{ form.password2 }}
+            </div>
+            <div class="FieldWrapper">
+                <input type="submit" value="Готово" />
+            </div>
+            {% if msg %}
+                <div class="FieldWrapper">{{msg}}</div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

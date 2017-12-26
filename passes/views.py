@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from Crypto.Cipher import AES
 from .models import Pass_info, Crypto
-from .forms import PassForm, RegForm, AuthForm, FindForm
+from .forms import PassForm, RegForm, AuthForm, FindForm, ChangePassForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -335,13 +336,45 @@ def auth(request):
                                                                 'title': 'Вход'})
             else:
                 return render(request, 'passes/auth.html', {'form': form,
-                                                            'errormsg': "Введенные данные неверны",
+                                                            'errormsg': "Введенные данные неверные",
                                                             'title': 'Вход'})
     else:
         form = AuthForm()
     return render(request, 'passes/auth.html', {'form': form,
                                                 'errormsg': "",
                                                 'title': 'Вход'})
+
+@login_required(login_url='/auth/')
+def userpage(request):
+    if request.method == 'POST':
+        form = ChangePassForm(request.POST)
+        if form.is_valid():
+            passwordold = form.cleaned_data['passwordold']
+            password = form.cleaned_data['password']
+            password2 = form.cleaned_data['password2']
+            if check_password(passwordold, request.user.password):
+                if password == password2:
+                    request.user.set_password(password)
+                    ulogin = request.user.username
+                    request.user.save()
+                    user = authenticate(username=ulogin, password=password)
+                    login(request, user)
+                    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                    'msg': 'Ваш пароль успешно сменен',
+                                                                    'title': request.user.username})
+                else:
+                    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                    'msg': 'Пароли не совпадают',
+                                                                    'title': request.user.username})
+            else:
+                return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                'msg': 'Неверный пароль',
+                                                                'title': request.user.username})
+    else:
+        form = ChangePassForm()
+    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                    'msg': '---',
+                                                    'title': request.user.username})
 
 def logoutview(request):
     logout(request)

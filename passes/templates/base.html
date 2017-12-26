@@ -19,7 +19,7 @@
         </ul>
         <ul class="auth">
             {% if request.user.is_authenticated %}
-            <li>Вы&nbsp;вошли&nbsp;как&nbsp;{{ request.user.username }}
+            <li>Вы&nbsp;вошли&nbsp;как&nbsp;<a href="{% url 'passes:userpage'%}">{{ request.user.username }}</a></li>
             <li class="auth"><a href="{% url 'passes:logout'%}">Выйти</a></li>
             {% else %}
             <li class="auth"><a href="{% url 'passes:reg'%}">Регистрация</a></li>
