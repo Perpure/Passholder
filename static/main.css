@@ -72,6 +72,9 @@ div.content{
 div.FieldWrapper{
     margin:10px;
 }
+div.mid{
+    text-align:center;
+}
 div.box{
     border: 2px solid #d1f7ff;
     position:relative;
@@ -92,10 +95,11 @@ div.boxr{
     margin: 0px 0px 20px 20px;
 }
 div.boxc{
+    max-width:500px;
     border: 2px solid #d1f7ff;
     background:white;
     padding:10px;
-    width:206px;
+    display: inline-block;
     border-radius:10px;
     margin: auto;
 }
