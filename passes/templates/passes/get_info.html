@@ -27,22 +27,15 @@
     </ul>
     </div>
         <div class="content">
-            {% if out %}    
+            {% if out %}   
                 <div class="boxr">
-                    <div class="FieldWrapper">
-                        Поиск по записям
-                    </div>
+                    <div class="FieldWrapper"></h4>Поиск по записям</h4></div>
                     <form action="{% url 'passes:get_info'%}" method="post">
                         {% csrf_token %}
                         <div class="FieldWrapper">
-                            {{ form.non_field_errors }}
-                        </div>
-                        <div class="FieldWrapper">
-                            {{ form.source.errors }}
                             {{ form.source }}
                         </div>
                         <div class="FieldWrapper">
-                            {{ form.login.errors }}
                             {{ form.login }}
                         </div>
                         <div class="FieldWrapper" align="center">

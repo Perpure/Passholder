@@ -297,7 +297,11 @@ def reg(request):
             password = form.cleaned_data['password']
             password2 = form.cleaned_data['password2']
             email = form.cleaned_data['email']
-            if re.match(ALLOWED_CHARS, login) and re.match(ALLOWED_CHARS, password) and re.match(ALLOWED_CHARS, password2):
+            if User.objects.filter(email=email):
+                return render(request, 'passes/reg.html', {'form': form,
+                                                           'errormsg': "Такая почта уже зарегистрирована",
+                                                           'title': 'Регистрация'})
+            else:
                 if password == password2:
                     try:
                         user = User.objects.create_user(login, email, password)
@@ -309,13 +313,9 @@ def reg(request):
                     return render(request, 'passes/auth.html', {'title': 'Вход',
                                                                 'form': AuthForm()})
                 else:
-                    return render(request, 'passes/reg.html', {'form': form,
-                                                               'errormsg': "Пароли не совпадают! Попробуйте еще раз",
-                                                               'title': 'Регистрация'})
-            else:
-                return render(request, 'passes/reg.html', {'form': form,
-                                                           'errormsg': "Разрешенные символы: a-z A-Z 0-9 ! + - _ () . , : ; =",
-                                                           'title': 'Регистрация'})
+                        return render(request, 'passes/reg.html', {'form': form,
+                                                                   'errormsg': "Пароли не совпадают! Попробуйте еще раз",
+                                                                   'title': 'Регистрация'})
     else:
         form = RegForm()
     return render(request, 'passes/reg.html', {'form': form,
@@ -329,8 +329,7 @@ def auth(request):
             ulogin = form.cleaned_data['login']
             upassword = form.cleaned_data['password']
             user = authenticate(username=ulogin, password=upassword)
-            if re.match(ALLOWED_CHARS, ulogin) and re.match(ALLOWED_CHARS, upassword):
-                if user is not None:
+            if user is not None:
                     if user.is_active:
                         login(request, user)
                         next_url = request.GET.get('next')
@@ -342,14 +341,10 @@ def auth(request):
                         return render(request, 'passes/auth.html', {'form': form,
                                                                     'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
                                                                     'title': 'Вход'})
-                else:
+            else:
                     return render(request, 'passes/auth.html', {'form': form,
                                                                 'errormsg': "Введенные данные неверные",
                                                                 'title': 'Вход'})
-            else:
-                return render(request, 'passes/auth.html', {'form': form,
-                                                            'errormsg': "Разрешенные символы: a-z A-Z 0-9 ! + - _ () . , : ; =",
-                                                            'title': 'Вход'})
     else:
         form = AuthForm()
     return render(request, 'passes/auth.html', {'form': form,
@@ -364,8 +359,7 @@ def userpage(request):
             passwordold = form.cleaned_data['passwordold']
             password = form.cleaned_data['password']
             password2 = form.cleaned_data['password2']
-            if re.match(ALLOWED_CHARS, passwordold) and re.match(ALLOWED_CHARS, password) and re.match(ALLOWED_CHARS, password2):
-                if check_password(passwordold, request.user.password):
+            if check_password(passwordold, request.user.password):
                     if password == password2:
                         request.user.set_password(password)
                         ulogin = request.user.username
@@ -379,10 +373,6 @@ def userpage(request):
                         return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
                                                                         'msg': 'Пароли не совпадают',
                                                                         'title': request.user.username})
-                else:
-                    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                    'msg': 'Разрешенные символы: a-z A-Z 0-9 ! + - _ () . , : ; =',
-                                                                    'title': request.user.username})
             else:
                 return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
                                                                 'msg': 'Неверный пароль',

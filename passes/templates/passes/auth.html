@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="content">
-    <div class="boxc" align="center">
-        <div class="FieldWrapper">Вход в аккаунт</div>
-        <form action="{% url 'passes:auth'%}" method="post">
-        {% csrf_token %}
-            <div class="FieldWrapper">
-                {{ form.non_field_errors }}
-            </div>
-            <div class="FieldWrapper">
-                {{ form.login.errors }}
-                {{ form.login }}
-            </div>
-            <div class="FieldWrapper">
-                {{ form.password.errors }}
-                {{ form.password }}
-            </div>
-            <div class="FieldWrapper">
-                <input type="submit" value="Готово" />
-            </div>
-            {% if errormsg %}
-                <div class="FieldWrapper">{{errormsg}}</div>
-            {% endif %}
-        </form>
+    <div class="mid">
+        <div class="boxc" align="center">
+            <div class="FieldWrapper"><h4>Вход в аккаунт</h4></div>
+            <form action="{% url 'passes:auth'%}" method="post">
+            {% csrf_token %}
+                <div class="FieldWrapper">
+                    {{ form.login }}
+                </div>
+                <div class="FieldWrapper">
+                    {{ form.password }}
+                </div>
+                <div class="FieldWrapper">
+                    <input type="submit" value="Готово" />
+                </div>
+                <div class="FieldWrapper">
+                    <a href="{% url 'passes:password_reset' %}">Забыли пароль?</a>
+                </div>
+                {% if errormsg %}
+                    <div class="err">{{errormsg}}</div>
+                {% endif %}
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

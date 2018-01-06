@@ -112,7 +112,11 @@ table.info td{
 span.pagination{
     margin:0px;
     padding:2px 4px;
-]
+}
+div.err{
+    margin:10px;
+    color: red;
+}
 
 
 
