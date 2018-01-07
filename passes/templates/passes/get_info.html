@@ -28,22 +28,25 @@
     <ul class="menuimg">
         <li><a href="{% url 'passes:index'%}" class="img"><img src="{% static "log.png" %}" class="menu"></a></li>
         {% if request.user.is_authenticated %}
-        <li><a href="{% url 'passes:add_info'%}" class="img"><img src="{% static "log.png" %}" class="menu"></a></li>
-        <li><a href="{% url 'passes:get_info'%}" class="img"><img src="{% static "log.png" %}" class="menu"></a></li>
+        <li><a href="{% url 'passes:add_info'%}" class="img"><img src="{% static "add.png" %}" class="menu"></a></li>
+        <li><a href="{% url 'passes:get_info'%}" class="img"><img src="{% static "get.png" %}" class="menu"></a></li>
         {% endif %}    
     </ul>
-    <ul class="authimg">
-        {% if request.user.is_authenticated %}
-        <li>Вы&nbsp;вошли&nbsp;как&nbsp;<a href="{% url 'passes:userpage'%}">{{ request.user.username }}</a></li>
-        <li><a href="{% url 'passes:logout'%}">Выйти</a></li>
-        {% else %}
-        <li><a href="{% url 'passes:reg'%}">Регистрация</a></li>
-        <li><a href="{% url 'passes:auth'%}">Войти</a></li>
-        {% endif %}
-    </ul>
+    {% if request.user.is_authenticated %}
+        <ul class="authimg">
+            <li><a href="{% url 'passes:userpage'%}"><img src="{% static "user.png" %}" class="menu"></a></li>
+            <li><a href="{% url 'passes:logout'%}"><img src="{% static "exit.png" %}" class="menu"></a></li>
+        </ul>
+    {% else %}
+        <ul class="menutxtnoauth">
+            <li><a href="{% url 'passes:reg'%}">Регистрация</a></li>
+            <li><a href="{% url 'passes:auth'%}">Войти</a></li>
+        </ul>
+    {% endif %}
     </div>
         <div class="content">
-            {% if out %}   
+            {% if out %}
+                <div class="center">   
                 <div class="boxr">
                     <div class="FieldWrapper"></h4>Поиск по записям</h4></div>
                     <form action="{% url 'passes:get_info'%}" method="post">
@@ -59,6 +62,8 @@
                         </div>
                     </form>
                 </div>
+                </div>
+                <div class="center">
                 <div class="box">
                     <div class="FieldWrapper">
                         <table class="info" cellspacing="0px" cellpadding="5px">
@@ -100,6 +105,7 @@
                             {% endif %}
                         </div>
                     {% endif %}
+                </div>
                 </div>
                 <div class="FieldWrapper"><a href="{% url 'passes:download_info'%}?source={{ s }}&login={{ l }}">Скачать csv файл с текущей информацией</a></div>
             {% else %}
