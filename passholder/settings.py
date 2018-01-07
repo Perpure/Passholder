@@ -60,7 +60,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'passholder/templates/reistration',
+            'passholder/templates/registration',
             'passes/templates',
         ],
         'APP_DIRS': True,
@@ -85,7 +85,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'passholder_db',
-        'USER': 'root',
+        'USER': 'passholder_user',
         'PASSWORD': 'passholderpass',
         'HOST': 'localhost',
         'PORT': '8080',
