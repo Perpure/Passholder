@@ -13,7 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import re
 
-ALLOWED_CHARS=r'[a-zA-Z0-9!+-_().,:;=]'
+ALLOWED_CHARS = r'[a-zA-Z0-9!+-_().,:;=]'
+
 
 class Cred():
     def __init__(self, s, l, i, si):
@@ -21,6 +22,7 @@ class Cred():
         self.login = l
         self.id = i
         self.showid = si
+
 
 def index(request):
     return render(request, 'passes/index.html', {'title': 'PassHolder'})
@@ -41,7 +43,7 @@ def get_json(request):
                 password_r = 'error'
         else:
             password_r = "error"
-        if request.GET['cont']=="Скрыть":
+        if request.GET['cont'] == "Скрыть":
             return JsonResponse({"password": "",
                                  "id": str(credid),
                                  "show": "Показать"})
@@ -52,7 +54,8 @@ def get_json(request):
     except:
         return JsonResponse({"password": "",
                              "id": str(credid),
-                             "show": "Показать",})
+                             "show": "Показать", })
+
 
 @login_required(login_url='/auth/')
 def add_info(request):
@@ -122,10 +125,10 @@ def get_info(request):
         except ValueError:
             login_r = 'error'
 
-        out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id)))
+        out.append(Cred(source_r, login_r, q.id, "showid" + str(q.id)))
     sortedout = out
-    l=""
-    s=""
+    l = ""
+    s = ""
     if request.method == 'POST':
         form = FindForm(request.POST)
         if form.is_valid():
@@ -164,7 +167,8 @@ def get_info(request):
                                                     'out': sortedout,
                                                     's': s,
                                                     'l': l,
-                                                    'title': 'Просмотр записей' })
+                                                    'title': 'Просмотр записей'})
+
 
 @login_required(login_url='/auth/')
 def delete_info(request):
@@ -188,24 +192,25 @@ def delete_info(request):
                 login_r = login
             except ValueError:
                 login_r = 'error'
-            if request.GET['del']=='no':
+            if request.GET['del'] == 'no':
                 return render(request, 'passes/delete_info.html', {'source': source_r,
-                                                                 'login': login_r,
-                                                                 'id': credid,
-                                                                 'del': 0,
-                                                                 'title': 'Удаление записи'})
-            elif request.GET['del']=='yes':
+                                                                   'login': login_r,
+                                                                   'id': credid,
+                                                                   'del': 0,
+                                                                   'title': 'Удаление записи'})
+            elif request.GET['del'] == 'yes':
                 c.delete()
                 cred.delete()
                 return render(request, 'passes/delete_info.html', {'source': source_r,
-                                                                  'login': login_r,
-                                                                  'del': 1,
-                                                                  'title': 'Удаление записи'})
+                                                                   'login': login_r,
+                                                                   'del': 1,
+                                                                   'title': 'Удаление записи'})
         return render(request, 'passes/delete_info.html', {'del': 2,
                                                            'title': 'Удаление записи'})
     except:
         return render(request, 'passes/delete_info.html', {'del': 2,
                                                            'title': 'Удаление записи'})
+
 
 @login_required(login_url='/auth/')
 def download_info(request):
@@ -232,14 +237,14 @@ def download_info(request):
         except ValueError:
             login_r = 'error'
 
-        out.append(Cred(source_r, login_r, q.id, "showid"+str(q.id)))
+        out.append(Cred(source_r, login_r, q.id, "showid" + str(q.id)))
     sortedout = []
     l = request.GET['login']
     s = request.GET['source']
     if l and s:
         for cr in out:
             if str(cr.login).find(l) + 1 and str(cr.source).find(s) + 1:
-                cred = Pass_info.objects.get(id = cr.id)
+                cred = Pass_info.objects.get(id=cr.id)
                 c = Crypto.objects.get(id=cred.crypto_id)
                 cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
                 password = cipher.decrypt(cred.password_text)
@@ -248,11 +253,12 @@ def download_info(request):
                     password_r = password
                 except ValueError:
                     password_r = 'error'
-                response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+                response.write(cr.source.decode("utf-8") + ';' + cr.login.decode("utf-8") + ';' + password_r.decode(
+                    "utf-8") + '\n')
     elif l:
         for cr in out:
             if str(cr.login).find(l) + 1:
-                cred = Pass_info.objects.get(id = cr.id)
+                cred = Pass_info.objects.get(id=cr.id)
                 c = Crypto.objects.get(id=cred.crypto_id)
                 cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
                 password = cipher.decrypt(cred.password_text)
@@ -261,11 +267,12 @@ def download_info(request):
                     password_r = password
                 except ValueError:
                     password_r = 'error'
-                response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+                response.write(cr.source.decode("utf-8") + ';' + cr.login.decode("utf-8") + ';' + password_r.decode(
+                    "utf-8") + '\n')
     elif s:
         for cr in out:
             if str(cr.source).find(s) + 1:
-                cred = Pass_info.objects.get(id = cr.id)
+                cred = Pass_info.objects.get(id=cr.id)
                 c = Crypto.objects.get(id=cred.crypto_id)
                 cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
                 password = cipher.decrypt(cred.password_text)
@@ -274,10 +281,11 @@ def download_info(request):
                     password_r = password
                 except ValueError:
                     password_r = 'error'
-                response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+                response.write(cr.source.decode("utf-8") + ';' + cr.login.decode("utf-8") + ';' + password_r.decode(
+                    "utf-8") + '\n')
     else:
         for cr in out:
-            cred = Pass_info.objects.get(id = cr.id)
+            cred = Pass_info.objects.get(id=cr.id)
             c = Crypto.objects.get(id=cred.crypto_id)
             cipher = AES.new(settings.AES_KEY, AES.MODE_EAX, nonce=c.nonce_p)
             password = cipher.decrypt(cred.password_text)
@@ -286,8 +294,10 @@ def download_info(request):
                 password_r = password
             except ValueError:
                 password_r = 'error'
-            response.write(cr.source.decode("utf-8")+';'+cr.login.decode("utf-8")+';'+password_r.decode("utf-8")+'\n')
+            response.write(
+                cr.source.decode("utf-8") + ';' + cr.login.decode("utf-8") + ';' + password_r.decode("utf-8") + '\n')
     return response
+
 
 def reg(request):
     if request.method == 'POST':
@@ -313,14 +323,15 @@ def reg(request):
                     return render(request, 'passes/auth.html', {'title': 'Вход',
                                                                 'form': AuthForm()})
                 else:
-                        return render(request, 'passes/reg.html', {'form': form,
-                                                                   'errormsg': "Пароли не совпадают! Попробуйте еще раз",
-                                                                   'title': 'Регистрация'})
+                    return render(request, 'passes/reg.html', {'form': form,
+                                                               'errormsg': "Пароли не совпадают! Попробуйте еще раз",
+                                                               'title': 'Регистрация'})
     else:
         form = RegForm()
     return render(request, 'passes/reg.html', {'form': form,
                                                'errormsg': "",
                                                'title': 'Регистрация'})
+
 
 def auth(request):
     if request.method == 'POST':
@@ -330,26 +341,27 @@ def auth(request):
             upassword = form.cleaned_data['password']
             user = authenticate(username=ulogin, password=upassword)
             if user is not None:
-                    if user.is_active:
-                        login(request, user)
-                        next_url = request.GET.get('next')
-                        if next_url:
-                            return redirect(next_url)
-                        else:
-                            return render(request, 'passes/index.html',{'title': 'PassHolder'})
+                if user.is_active:
+                    login(request, user)
+                    next_url = request.GET.get('next')
+                    if next_url:
+                        return redirect(next_url)
                     else:
-                        return render(request, 'passes/auth.html', {'form': form,
-                                                                    'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
-                                                                    'title': 'Вход'})
-            else:
+                        return render(request, 'passes/index.html', {'title': 'PassHolder'})
+                else:
                     return render(request, 'passes/auth.html', {'form': form,
-                                                                'errormsg': "Введенные данные неверные",
+                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
                                                                 'title': 'Вход'})
+            else:
+                return render(request, 'passes/auth.html', {'form': form,
+                                                            'errormsg': "Введенные данные неверные",
+                                                            'title': 'Вход'})
     else:
         form = AuthForm()
     return render(request, 'passes/auth.html', {'form': form,
                                                 'errormsg': "",
                                                 'title': 'Вход'})
+
 
 @login_required(login_url='/auth/')
 def userpage(request):
@@ -360,19 +372,19 @@ def userpage(request):
             password = form.cleaned_data['password']
             password2 = form.cleaned_data['password2']
             if check_password(passwordold, request.user.password):
-                    if password == password2:
-                        request.user.set_password(password)
-                        ulogin = request.user.username
-                        request.user.save()
-                        user = authenticate(username=ulogin, password=password)
-                        login(request, user)
-                        return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                        'msg': 'Ваш пароль успешно сменен',
-                                                                        'title': request.user.username})
-                    else:
-                        return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                        'msg': 'Пароли не совпадают',
-                                                                        'title': request.user.username})
+                if password == password2:
+                    request.user.set_password(password)
+                    ulogin = request.user.username
+                    request.user.save()
+                    user = authenticate(username=ulogin, password=password)
+                    login(request, user)
+                    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                    'msg': 'Ваш пароль успешно сменен',
+                                                                    'title': request.user.username})
+                else:
+                    return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
+                                                                    'msg': 'Пароли не совпадают',
+                                                                    'title': request.user.username})
             else:
                 return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
                                                                 'msg': 'Неверный пароль',
@@ -381,6 +393,7 @@ def userpage(request):
         form = ChangePassForm()
     return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
                                                     'title': request.user.username})
+
 
 def logoutview(request):
     logout(request)
