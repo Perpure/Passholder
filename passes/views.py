@@ -347,7 +347,7 @@ def auth(request):
                     if next_url:
                         return redirect(next_url)
                     else:
-                        return render(request, 'passes/index.html', {'title': 'PassHolder'})
+                        return redirect('/')
                 else:
                     return render(request, 'passes/auth.html', {'form': form,
                                                                 'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
