@@ -80,6 +80,7 @@ ul.menuimg li {
     margin: 0px;
 }
 ul.menutxtnoauth{
+    display:none;
     float:right;
     text-align:right;
     margin: 6px;
@@ -190,6 +191,9 @@ ul.authimg {
     display:block;
 }
 ul.menuimg {
+    display:block;
+}
+ul.menutxtnoauth{
     display:block;
 }
 div.topdiv{
