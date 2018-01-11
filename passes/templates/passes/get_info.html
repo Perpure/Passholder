@@ -18,7 +18,7 @@
     </ul>
     <ul class="authtxt">
         {% if request.user.is_authenticated %}
-        <li>Вы&nbsp;вошли&nbsp;как&nbsp;<a href="{% url 'passes:userpage'%}">{{ request.user.username }}</a></li>
+        <li><a href="{% url 'passes:userpage'%}">Личный кабинет</a></li>
         <li><a href="{% url 'passes:logout'%}">Выйти</a></li>
         {% else %}
         <li><a href="{% url 'passes:reg'%}">Регистрация</a></li>
@@ -48,7 +48,7 @@
             {% if out %}
                 <div class="center">   
                 <div class="boxr">
-                    <div class="FieldWrapper"></h4>Поиск по записям</h4></div>
+                    <div class="FieldWrapper"><h4>Поиск по записям</h4></div>
                     <form action="{% url 'passes:get_info'%}" method="post">
                         {% csrf_token %}
                         <div class="FieldWrapper">
