@@ -6,43 +6,43 @@
         <link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
         <title>{{title}}</title>
     </head>
-    <body bgcolor="#e5fdff">
-    <div class="topdiv">
-    <ul class="menutxt">
-        <li><a href="{% url 'passes:index'%}">PassHolder</a></li>
-        {% if request.user.is_authenticated %}
-        <li><a href="{% url 'passes:add_info'%}">Добавить&nbsp;запись</a></li>
-        <li><a href="{% url 'passes:get_info'%}">Просмотреть&nbsp;записи</a></li>
-        {% endif %}    
-    </ul>
-    <ul class="authtxt">
-        {% if request.user.is_authenticated %}
-        <li><a href="{% url 'passes:userpage'%}">Личный кабинет</a></li>
-        <li><a href="{% url 'passes:logout'%}">Выйти</a></li>
-        {% else %}
-        <li><a href="{% url 'passes:reg'%}">Регистрация</a></li>
-        <li><a href="{% url 'passes:auth'%}">Войти</a></li>
-        {% endif %}
-    </ul>
-    <ul class="menuimg">
-        <li><a href="{% url 'passes:index'%}" class="img"><img src="{% static "log.png" %}" class="menu"></a></li>
-        {% if request.user.is_authenticated %}
-        <li><a href="{% url 'passes:add_info'%}" class="img"><img src="{% static "add.png" %}" class="menu"></a></li>
-        <li><a href="{% url 'passes:get_info'%}" class="img"><img src="{% static "get.png" %}" class="menu"></a></li>
-        {% endif %}    
-    </ul>
-    {% if request.user.is_authenticated %}
-        <ul class="authimg">
-            <li><a href="{% url 'passes:userpage'%}"><img src="{% static "user.png" %}" class="menu"></a></li>
-            <li><a href="{% url 'passes:logout'%}"><img src="{% static "exit.png" %}" class="menu"></a></li>
-        </ul>
-    {% else %}
-        <ul class="menutxtnoauth">
-            <li><a href="{% url 'passes:reg'%}">Регистрация</a></li>
-            <li><a href="{% url 'passes:auth'%}">Войти</a></li>
-        </ul>
-    {% endif %}
-    </div>
+    <body class="main">
+        <div class="topdiv">
+            <ul class="menutxt">
+                <a href="{% url 'passes:index'%}"><li>PassHolder</li></a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'passes:add_info'%}"><li>Добавить&nbsp;запись</li></a>
+                <a href="{% url 'passes:get_info'%}"><li>Просмотреть&nbsp;записи</li></a>
+                {% endif %}    
+            </ul>
+            <ul class="authtxt">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'passes:userpage'%}"><li>Личный кабинет</li></a>
+                    <a href="{% url 'passes:logout'%}"><li>Выйти</li></a>
+                {% else %}
+                    <a href="{% url 'passes:reg'%}"><li>Регистрация</li></a>
+                    <a href="{% url 'passes:auth'%}"><li>Войти</li></a>
+                {% endif %}
+            </ul>
+            <ul class="menuimg">
+                <a href="{% url 'passes:index'%}" class="img"><li><img src="{% static "log.png" %}" class="menu"></li></a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'passes:add_info'%}" class="img"><li><img src="{% static "add.png" %}" class="menu"></li></a>
+                <a href="{% url 'passes:get_info'%}" class="img"><li><img src="{% static "get.png" %}" class="menu"></li></a>
+                {% endif %}    
+            </ul>
+            {% if request.user.is_authenticated %}
+                <ul class="authimg">
+                    <a href="{% url 'passes:userpage'%}"><li><img src="{% static "user.png" %}" class="menu"></li></a>
+                    <a href="{% url 'passes:logout'%}"><li><img src="{% static "exit.png" %}" class="menu"></li></a>
+                </ul>
+            {% else %}
+                <ul class="menutxtnoauth">
+                    <a href="{% url 'passes:reg'%}"><li>Регистрация</li></a>
+                    <a href="{% url 'passes:auth'%}"><li>Войти</li></a>
+                </ul>
+            {% endif %}
+        </div>
     <div class="land">
         <h1 align="center" class="title">PassHolder</h1>
         <h3 align="center">Храните ваши пароли в облаке, получая доступ к ним из любой точки мира.</h3>
