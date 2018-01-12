@@ -12,6 +12,9 @@ body {
 body.main{
     background:#e5fdff;
 }
+*:focus {
+    outline: none;
+}
 h1.title {
     color:#00363a;
 }

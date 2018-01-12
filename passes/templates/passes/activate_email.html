@@ -1,0 +1,10 @@
+{% autoescape off %}
+Здравствуй {{ user.username }},
+Чтобы завершить регистрацию, перейдите по ссылке ниже,
+
+http://{{ domain }}{% url 'passes:activate' uidb64=uid token=token %}
+
+Если ссылка не работает, скопируйте и вставьте ее в новое окно браузера.
+
+PassHolder
+{% endautoescape %}

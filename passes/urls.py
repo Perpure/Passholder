@@ -27,11 +27,13 @@ urlpatterns = [
     url(r'^add_info/$', views.add_info, name='add_info'),
     url(r'^get_info/$', views.get_info, name='get_info'),
     url(r'^reg/$', views.reg, name='reg'),
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.activate, name='activate'),
     url(r'^auth/$', views.auth, name='auth'),
     url(r'^logout/$', views.logoutview, name='logout'),
     url(r'^ajax/json/$', views.get_json),
     url(r'^delete_info/$', views.delete_info, name='delete_info'),
     url(r'^download_info/&', views.download_info, name='download_info'),
     url(r'^userpage/$', views.userpage, name='userpage'),
-
+    url(r'^email_confirm/$', views.email_confirm, name='email_confirm'),
 ]

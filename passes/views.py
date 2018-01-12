@@ -11,9 +11,13 @@ from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import re
-
-ALLOWED_CHARS = r'[a-zA-Z0-9!+-_().,:;=]'
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .tokens import activation_token
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
 
 
 class Cred():
@@ -315,7 +319,18 @@ def reg(request):
                 if password == password2:
                     try:
                         user = User.objects.create_user(login, email, password)
+                        user.is_active = False
                         user.save()
+                        mail_subject = 'Активируйте ваш аккаунт PassHolder.'
+                        message = render_to_string('activate_email.html', {
+                            'user': user,
+                            'domain': get_current_site(request).domain,
+                            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                            'token':activation_token.make_token(user),
+                        })
+                        email = EmailMessage(mail_subject, message, to=[email])
+                        email.send()
+                        return render(request, 'passes/email_confirm.html', {'msg':'Чтобы подтвердить ваш email, на почту '+user.email+' было отправлено письмо с инструкциями по активации. Если вы не получили письмо, проверьте папку спам, а также убедитесь, что указанная почта действительно ваша.'})
                     except IntegrityError:
                         return render(request, 'passes/reg.html', {'form': form,
                                                                    'errormsg': "Указанный пользователь уже существует!",
@@ -362,6 +377,19 @@ def auth(request):
                                                 'errormsg': "",
                                                 'title': 'Вход'})
 
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return render(request, 'passes/email_confirm.html', {'msg':'Вы успешно подтвердили почту, теперь вы можете начать работать с сайтом.'})
+    else:
+        return render(request, 'passes/email_confirm.html', {'msg':'Неверная ссылка активации'})
 
 @login_required(login_url='/auth/')
 def userpage(request):
@@ -394,7 +422,9 @@ def userpage(request):
     return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
                                                     'title': request.user.username})
 
+def email_confirm(request):
+    return render(request, 'passes/email_confirm.html')
 
 def logoutview(request):
     logout(request)
-    return HttpResponseRedirect('/')
+    return redirect('/')
