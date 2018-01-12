@@ -42,7 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'PassHolderService@gmail.com'
+EMAIL_HOST_PASSWORD = 'Kgu4avrud1nepcidyq6nlpz'
+EMAIL_PORT = 587
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
