@@ -1,19 +1,37 @@
+/*
+Copyright (C) 2017-2018 Pavel Dyachek GPL 3.0+
+
+This file is part of PassHolder.
+
+    PassHolder is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    PassHolder is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with PassHolder.  If not, see <http://www.gnu.org/licenses/>.
+*/
 body, html { 
     margin:0;
     width:100%;
     top:0;
     left:0;
-    background:#e3fdff;
+    background:#e5fdff;
 }
 body {
     font-family:sans-serif;
     font-size:1em;
 }
-body.main{
-    background:#e5fdff;
-}
 *:focus {
     outline: none;
+}
+input:focus {
+    box-shadow:0 0 5px rgba(0,0,0,0.4);
 }
 h1.title {
     color:#00363a;
@@ -136,7 +154,7 @@ a:hover{
 div.content{
     padding:30px;
     padding-top:81px;
-    background:#e3fdff;
+    background:#e5fdff;
     min-height: calc(100% - 111px);
 }
 div.land{
@@ -224,6 +242,16 @@ span.pagination{
 div.err{
     margin:10px;
     color: red;
+}
+div.footer{
+    text-align:center;
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background: #c0f7ff;
+    padding:5px;
+    font-size:0.75em;
 }
 @media (max-width:880px){
 ul.menutxt {
