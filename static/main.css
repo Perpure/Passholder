@@ -246,6 +246,9 @@ div.err{
     margin:10px;
     color: red;
 }
+div.msg{
+    margin:10px;
+}
 div.footer{
     text-align:center;
     position:fixed;

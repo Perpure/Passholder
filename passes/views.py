@@ -118,7 +118,7 @@ def add_info(request):
             us.save()
             return render(request, 'passes/add_info.html', {'form': PassForm(),
                                                             'title': 'Добавление записи',
-                                                            'msg': "Успешно добавлено"})
+                                                            'msg': "Успешно добавлено."})
     else:
         form = PassForm()
     return render(request, 'passes/add_info.html', {'form': form,
@@ -331,7 +331,7 @@ def reg(request):
             email = form.cleaned_data['email']
             if User.objects.filter(email=email):
                 return render(request, 'passes/reg.html', {'form': form,
-                                                           'errormsg': "Такая почта уже зарегистрирована",
+                                                           'errormsg': "Такая почта уже зарегистрирована.",
                                                            'title': 'Регистрация'})
             else:
                 if password == password2:
@@ -351,13 +351,13 @@ def reg(request):
                         return render(request, 'passes/email_confirm.html', {'msg':'Чтобы подтвердить ваш email, на почту '+user.email+' было отправлено письмо с инструкциями по активации. Если вы не получили письмо, проверьте папку спам, а также убедитесь, что указанная почта действительно ваша.'})
                     except IntegrityError:
                         return render(request, 'passes/reg.html', {'form': form,
-                                                                   'errormsg': "Указанный пользователь уже существует!",
+                                                                   'errormsg': "Указанный пользователь уже существует.",
                                                                    'title': 'Регистрация'})
                     return render(request, 'passes/auth.html', {'title': 'Вход',
                                                                 'form': AuthForm()})
                 else:
                     return render(request, 'passes/reg.html', {'form': form,
-                                                               'errormsg': "Пароли не совпадают! Попробуйте еще раз",
+                                                               'errormsg': "Пароли не совпадают. Попробуйте еще раз.",
                                                                'title': 'Регистрация'})
     else:
         form = RegForm()
@@ -383,11 +383,11 @@ def auth(request):
                         return redirect('/')
                 else:
                     return render(request, 'passes/auth.html', {'form': form,
-                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент",
+                                                                'errormsg': "Введенные данные верны, но пользователь не активен на данный момент.",
                                                                 'title': 'Вход'})
             else:
                 return render(request, 'passes/auth.html', {'form': form,
-                                                            'errormsg': "Введенные данные неверные",
+                                                            'errormsg': "Введенные данные неверные.",
                                                             'title': 'Вход'})
     else:
         form = AuthForm()
@@ -407,7 +407,7 @@ def activate(request, uidb64, token):
         login(request, user)
         return render(request, 'passes/email_confirm.html', {'msg':'Вы успешно подтвердили почту, теперь вы можете начать работать с сайтом.'})
     else:
-        return render(request, 'passes/email_confirm.html', {'msg':'Неверная ссылка активации'})
+        return render(request, 'passes/email_confirm.html', {'msg':'Неверная ссылка активации.'})
 
 @login_required(login_url='/auth/')
 def userpage(request):
@@ -425,15 +425,15 @@ def userpage(request):
                     user = authenticate(username=ulogin, password=password)
                     login(request, user)
                     return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                    'msg': 'Ваш пароль успешно сменен',
+                                                                    'ok': 'Ваш пароль успешно сменен.',
                                                                     'title': request.user.username})
                 else:
                     return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                    'msg': 'Пароли не совпадают',
+                                                                    'msg': 'Пароли не совпадают.',
                                                                     'title': request.user.username})
             else:
                 return render(request, 'passes/userpage.html', {'form': ChangePassForm(),
-                                                                'msg': 'Неверный пароль',
+                                                                'msg': 'Неверный пароль.',
                                                                 'title': request.user.username})
     else:
         form = ChangePassForm()
