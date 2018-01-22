@@ -21,6 +21,7 @@ This file is part of PassHolder.
         {% load static %}
         <meta http-equiv="Content-Type"
               content="text/html; charset=windows-1251">
+        <meta name=viewport content="width=500">
         <link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
         <script src="{% static "showpass.js" %}"></script>
         <title>{{title}}</title>
@@ -76,14 +77,14 @@ This file is part of PassHolder.
                             {{ form.login }}
                         </div>
                         <div class="FieldWrapper" align="center">
-                            <input type="submit" value="Найти" />
+                            <input type="submit" value="Найти" style="height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px; background: #eeeeee" />
                         </div>
                     </form>
                 </div>
                 </div>
                 <div class="center">
-                <div class="box">
-                    <div class="FieldWrapper">
+                <div class="box" align="center">
+                    <div class="FieldWrapper" align="center">
                         <table class="info" cellspacing="0px" cellpadding="5px">
                             <tr>
                                 <td align="center">Ресурс</td>
