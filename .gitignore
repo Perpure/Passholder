@@ -1,5 +1,5 @@
 passholder/secret.py
-
+venv
 # Created by https://www.gitignore.io/api/linux,python,django,windows,pycharm+all
 
 ### Django ###
