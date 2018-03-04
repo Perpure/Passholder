@@ -20,37 +20,40 @@ from django import forms
 
 
 class PassForm(forms.Form):
-    source_text = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Ресурс', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
-    login_text = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
-    password_text = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
+    source_text = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Ресурс'}))
+    login_text = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин'}))
+    password_text = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}))
 
 
 class RegForm(forms.Form):
-    login = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}), min_length=5)
-    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}),
+    login = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин'}), min_length=5)
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}),
                                min_length=8)
-    password2 = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}),
+    password2 = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль'}),
                                 min_length=8)
-    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'Эл. почта', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'Эл. почта'}))
 
 
 class AuthForm(forms.Form):
-    login = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
-    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
+    login = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Логин'}))
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}))
 
 
 class FindForm(forms.Form):
     source = forms.CharField(max_length=100, required=False,
-                             widget=forms.TextInput(attrs={'placeholder': 'Поиск по ресурсу', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
+                             widget=forms.TextInput(attrs={'placeholder': 'Поиск по ресурсу'}))
     login = forms.CharField(max_length=100, required=False,
-                            widget=forms.TextInput(attrs={'placeholder': 'Поиск по логину', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
+                            widget=forms.TextInput(attrs={'placeholder': 'Поиск по логину'}))
 
 
 class ChangePassForm(forms.Form):
-    passwordold = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Прежний пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}))
-    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Новый пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}),
+    passwordold = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Прежний пароль'}))
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput(attrs={'placeholder': 'Новый пароль'}),
                                min_length=8)
     password2 = forms.CharField(max_length=100,
-                                widget=forms.PasswordInput(attrs={'placeholder': 'Повторите новый пароль', 'style':'-webkit-appearance: none; height: 27px; border-radius:2px; border: 1px solid #aaaaaa; padding: 0px 10px;'}),
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Повторите новый пароль'}),
                                 min_length=8)
+
+class ConfirmationForm(forms.Form):
+    token = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Введите токен'}))
 

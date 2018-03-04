@@ -31,10 +31,20 @@ body {
 
 *:focus {
     outline: none;
-    border:none;
 }
 input:focus {
     box-shadow:0 0 3px rgba(0,0,0,0.3);
+    border: 1px solid #aaaaaa;
+}
+input[type="submit"]{
+    background: #eeeeee;
+}
+input {
+    -webkit-appearance: none;
+    height: 27px;
+    border-radius:2px;
+    border: 1px solid #aaaaaa;
+    padding: 0px 10px;
 }
 h1.title {
     color:#00363a;

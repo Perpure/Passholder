@@ -19,6 +19,9 @@ This file is part of PassHolder.
 from django.db import models
 from django.utils import timezone
 
+class Confirmation(models.Model):
+    token = models.IntegerField(default=111111)
+    user_id = models.IntegerField(default=1)
 
 class Crypto(models.Model):
     tag_s = models.BinaryField(default=b'0')

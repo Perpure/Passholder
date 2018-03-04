@@ -18,8 +18,8 @@ This file is part of PassHolder.
 """
 from django.shortcuts import render, redirect
 from Crypto.Cipher import AES
-from .models import Pass_info, Crypto
-from .forms import PassForm, RegForm, AuthForm, FindForm, ChangePassForm
+from .models import Pass_info, Crypto, Confirmation
+from .forms import PassForm, RegForm, AuthForm, FindForm, ChangePassForm, ConfirmationForm
 from django.db import IntegrityError
 from django.utils import timezone
 from django.conf import settings
@@ -36,7 +36,7 @@ from django.template.loader import render_to_string
 from .tokens import activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
-
+from random import randint
 
 class Cred():
     def __init__(self, s, l, i, si):
@@ -375,12 +375,25 @@ def auth(request):
             user = authenticate(username=ulogin, password=upassword)
             if user is not None:
                 if user.is_active:
-                    login(request, user)
+                    request.session['user_id']=user.id
+                    token = Confirmation.objects.filter(user_id=user.id).first()
+                    if token:
+                        token.token=randint(100000,999999)
+                    else:
+                        token = Confirmation(token=randint(100000,999999), user_id=user.id)
+                    token.save()
+                    
+                    mail_subject = 'Подтвердите вход в ваш аккаунт PassHolder.'
+                    message = render_to_string('confirmation_email.html', {
+                            'user': user,
+                            'token': token.token,
+                    })
+                    email = EmailMessage(mail_subject, message, to=[user.email])
+                    email.send()
                     next_url = request.GET.get('next')
                     if next_url:
-                        return redirect(next_url)
-                    else:
-                        return redirect('/')
+                        return redirect('/confirmation/',next=next_url)
+                    return redirect('/confirmation/')
                 else:
                     return render(request, 'passes/auth.html', {'form': form,
                                                                 'errormsg': "Введенные данные верны, но пользователь не активен на данный момент.",
@@ -394,6 +407,28 @@ def auth(request):
     return render(request, 'passes/auth.html', {'form': form,
                                                 'errormsg': "",
                                                 'title': 'Вход'})
+
+def confirmation(request):
+    form = ConfirmationForm()
+    if request.method == 'POST':
+        form = ConfirmationForm(request.POST)
+        if form.is_valid():
+            token = form.cleaned_data['token']
+            if 'user_id' in request.session:
+                old_tok = Confirmation.objects.filter(user_id=request.session['user_id']).first()
+                if old_tok:
+                    if str(old_tok.token) == str(token):
+                        login(request, User.objects.get(id=request.session['user_id']))
+                        old_tok.delete()
+                        next_url = request.GET.get('next')
+                        if next_url:
+                            return redirect(next_url)
+                        else:
+                            return redirect('/')
+        return render(request, 'passes/confirmation.html', {'form': form,
+                                                                'title':'Подтверждение входа',
+                                                                'errormsg': "Введенные данные неверные."})
+    return render(request, 'passes/confirmation.html', {'form': form, 'title':'Подтверждение входа'})
 
 def activate(request, uidb64, token):
     try:

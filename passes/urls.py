@@ -49,6 +49,7 @@ urlpatterns = [
         views.activate, name='activate'),
     url(r'^auth/$', views.auth, name='auth'),
     url(r'^logout/$', views.logoutview, name='logout'),
+    url(r'^confirmation/$', views.confirmation, name='confirmation'),
     url(r'^ajax/json/$', views.get_json),
     url(r'^delete_info/$', views.delete_info, name='delete_info'),
     url(r'^download_info/&', views.download_info, name='download_info'),
