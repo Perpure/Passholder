@@ -16,7 +16,7 @@
 
 Подготовка к работе (и разработке)
 -------------
-1. Склонируйте проект: `git clone git@gitlab.com:Janb0t/Passholder.git`
+1. Склонируйте проект: `git clone https://github.com/Perpure/Passholder`
 2. Создайте отдельный virtualenv (либо через PyCharm, либо вручную)
 3. Включите virtualenv
 4. Перейдите в директорию проекта
